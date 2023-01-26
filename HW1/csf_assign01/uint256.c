@@ -10,6 +10,10 @@
 UInt256 uint256_create_from_u64(uint64_t val) {
   UInt256 result;
   // TODO: implement
+  result.data[0] = val;
+  for(int i = 0; i < 2; i++) {
+    result.data[i] = 0UL;
+  }
   return result;
 }
 
