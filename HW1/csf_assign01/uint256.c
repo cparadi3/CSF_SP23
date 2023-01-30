@@ -54,14 +54,16 @@ uint64_t uint256_get_bits(UInt256 val, unsigned index) {
 // Compute the sum of two UInt256 values.
 UInt256 uint256_add(UInt256 left, UInt256 right) {
   UInt256 sum;
+  uint64_t carry = 0U;
   // TODO: implement
-  for (int i = 0; i < 3; i++) {
-    sum.data[i] = left.data[i] + right.data[i];
-    if (sum < left.data[i] {
-      if (i != 3) {
-        //Figure out overflow carrying of number
-      }
-    })
+  for (int i = 0; i < 4; i++) {
+    sum.data[i] = left.data[i] + right.data[i] + carry;
+    if (sum.data[i] < left.data[i]) {
+      carry = 1U;
+    }
+    else {
+      carry = 0U;
+    }
   }
   return sum;
 }
