@@ -9,7 +9,6 @@
 // all other bits are set to 0.
 UInt256 uint256_create_from_u64(uint64_t val) {
   UInt256 result;
-  // TODO: implement
   result.data[0] = val;
   for(int i = 1; i < 4; i++) {
     result.data[i] = 0U;
@@ -22,7 +21,6 @@ UInt256 uint256_create_from_u64(uint64_t val) {
 // at index 3 is the most significant.
 UInt256 uint256_create(const uint64_t data[4]) {
   UInt256 result;
-  // TODO: implement
   for (int i = 0; i < 4; i++) {
     result.data[i] = data[i];
   }
@@ -49,7 +47,6 @@ char *uint256_format_as_hex(UInt256 val) {
 // significant 64 bits.
 uint64_t uint256_get_bits(UInt256 val, unsigned index) {
   uint64_t bits;
-  // TODO: implement
   bits = val.data[index];
   return bits;
 }
@@ -58,6 +55,14 @@ uint64_t uint256_get_bits(UInt256 val, unsigned index) {
 UInt256 uint256_add(UInt256 left, UInt256 right) {
   UInt256 sum;
   // TODO: implement
+  for (int i = 0; i < 3; i++) {
+    sum.data[i] = left.data[i] + right.data[i];
+    if (sum < left.data[i] {
+      if (i != 3) {
+        //Figure out overflow carrying of number
+      }
+    })
+  }
   return sum;
 }
 
