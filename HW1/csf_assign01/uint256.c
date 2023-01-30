@@ -72,9 +72,9 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
 UInt256 uint256_sub(UInt256 left, UInt256 right) {
   UInt256 result;
     for (int i = 0; i < 4; i++) {
-      result.data[i] = (~ uint256_get_bits(right, i)) + 1U;
+      result.data[i] = left.data[i] + ((~ uint256_get_bits(right, i)) + 1U);
     }
-  result = uint256_add(left, result);
+  //result = uint256_add(left, result);
   return result;
 }
 
