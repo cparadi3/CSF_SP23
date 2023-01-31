@@ -72,14 +72,20 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
 UInt256 uint256_sub(UInt256 left, UInt256 right) {
   UInt256 result;
   UInt256 temp;
-  temp.data[0] = ~right.data[0] + 1U;
-    for (int i = 1; i < 4; i++) {
+  UInt256 one;
+  //temp.data[0] = ~right.data[0] + 1U;
+    for (int i = 0; i < 4; i++) {
       //uint64_t temp = ((~ uint256_get_bits(right, i)) + 1U);
       //assert(temp + right.data[i] == OU);
       //result.data[i] = left.data[i] + (~right.data[i] +1U);//((~uint256_get_bits(right, i)) + 1U);
-      temp.data[i] = (~right.data[i]);
+      //temp.data[i] = (~right.data[i]);
+      one.data[i] = (i == 0) ? 1U : 0U;
+      temp.data[i] = ~right.data[i];
     }
-  result = uint256_add(left, temp);
+
+  right = uint256_add(temp, one);
+  
+  result = uint256_add(left, right);
   return result;
 }
 
