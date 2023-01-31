@@ -31,6 +31,33 @@ UInt256 uint256_create(const uint64_t data[4]) {
 UInt256 uint256_create_from_hex(const char *hex) {
   UInt256 result;
   // TODO: implement
+  /*
+  char hexDigits[64] = {'0'};
+  for (int i = 0; i < 64; i++) {
+    if (&(hex + i) == NULL) {
+      break;
+    }
+    hexDigits[i] = &(hex + i);
+  }
+  string uint1, uint2, uint3, uint4 = "";
+  for (int i = 0; i < 16; i++) {
+    uint1 += hexDigits[i];
+    uint2 += hexDigits[i + 16];
+    uint3 += hexDigits[i + 32];
+    uint4 += hexDigits[i + 48];
+  }
+  */
+  //FREE THIS
+  char *ptr = strdup(hex);
+  ptr += 16;
+  result.data[0] = strtoul((hex), &(ptr), 16);
+  char* ptr2 = ptr + 16;
+  result.data[1] = strtoul(ptr, &ptr2, 16);
+  ptr += 32;
+  result.data[2] = strtoul(ptr2, &ptr, 16);
+  ptr2 += 32;
+  result.data[3] = strtoul(ptr, &ptr2, 16);
+  //free memory
   return result;
 }
 
@@ -73,17 +100,10 @@ UInt256 uint256_sub(UInt256 left, UInt256 right) {
   UInt256 result;
   UInt256 temp;
   UInt256 one;
-  //temp.data[0] = ~right.data[0] + 1U;
     for (int i = 0; i < 4; i++) {
-      //uint64_t temp = ((~ uint256_get_bits(right, i)) + 1U);
-      //assert(temp + right.data[i] == OU);
-      //result.data[i] = left.data[i] + (~right.data[i] +1U);//((~uint256_get_bits(right, i)) + 1U);
-      //temp.data[i] = (~right.data[i]);
       one.data[i] = (i == 0) ? 1U : 0U;
       temp.data[i] = ~right.data[i];
     }
-  
-
   right = uint256_add(temp, one);
   result = uint256_add(left, right);
   return result;
