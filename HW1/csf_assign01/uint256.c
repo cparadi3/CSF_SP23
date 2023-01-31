@@ -58,7 +58,7 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
   // TODO: implement
   for (int i = 0; i < 4; i++) {
     sum.data[i] = left.data[i] + right.data[i] + carry;
-    if (sum.data[i] < left.data[i]) {
+    if ((sum.data[i] < right.data[i]) || (sum.data[i] < left.data[i])) {
       carry = 1U;
     }
     else {
@@ -82,9 +82,9 @@ UInt256 uint256_sub(UInt256 left, UInt256 right) {
       one.data[i] = (i == 0) ? 1U : 0U;
       temp.data[i] = ~right.data[i];
     }
+  
 
   right = uint256_add(temp, one);
-  
   result = uint256_add(left, right);
   return result;
 }
