@@ -30,23 +30,6 @@ UInt256 uint256_create(const uint64_t data[4]) {
 // Create a UInt256 value from a string of hexadecimal digits.
 UInt256 uint256_create_from_hex(const char *hex) {
   UInt256 result;
-  // TODO: implement
-  /*
-  char hexDigits[64] = {'0'};
-  for (int i = 0; i < 64; i++) {
-    if (&(hex + i) == NULL) {
-      break;
-    }
-    hexDigits[i] = &(hex + i);
-  }
-  string uint1, uint2, uint3, uint4 = "";
-  for (int i = 0; i < 16; i++) {
-    uint1 += hexDigits[i];
-    uint2 += hexDigits[i + 16];
-    uint3 += hexDigits[i + 32];
-    uint4 += hexDigits[i + 48];
-  }
-  */
   //FREE THIS
   char *ptr = strdup(hex);
   ptr += 16;
