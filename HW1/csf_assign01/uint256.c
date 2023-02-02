@@ -49,7 +49,20 @@ UInt256 uint256_create_from_hex(const char *hex) {
 // given UInt256 value.
 char *uint256_format_as_hex(UInt256 val) {
   char *hex = NULL;
+  char *buf = NULL;
+  sprintf(buf, "%016lx", val.data[3]);
+  sprintf(buf + 16, "%016lx", val.data[2]);
+  sprintf(buf + 32, "%016lx", val.data[1]);
+  sprintf(buf + 64, "%016lx", val.data[0]);
   // TODO: implement
+  int size = 64;
+  buf -= 64;
+  while (*buf == 0) {
+    buf += 1;
+    size--;
+  }
+  hex = malloc(size*sizeof(char));
+  hex = buf;
   return hex;
 }
 
