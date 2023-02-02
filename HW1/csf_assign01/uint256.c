@@ -31,7 +31,8 @@ UInt256 uint256_create(const uint64_t data[4]) {
 UInt256 uint256_create_from_hex(const char *hex) {
   UInt256 result;
   //FREE THIS
-  char *ptr = strdup(hex);
+  char *ptr = NULL;
+  char* strcpy(char* ptr, const char* hex);
   ptr += 16;
   result.data[0] = strtoul((hex), &(ptr), 16);
   char* ptr2 = ptr + 16;
