@@ -122,7 +122,11 @@ UInt256 uint256_mul(UInt256 left, UInt256 right) {
   product.data[3] = 0U;
     // TODO: implement
   for (int i = 0; i < 4; i++) {
-    //for ()
+    for (int j = 0; i < 64; j++) {
+      if (uint256_bit_is_set(left, (i * 64) + j)) {
+        uint256_add(product, uint256_leftshift(right, ((i * 64) + j)));
+      }
+    }
   }
   return product;
 }
