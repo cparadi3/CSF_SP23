@@ -116,7 +116,14 @@ UInt256 uint256_sub(UInt256 left, UInt256 right) {
 // Compute the product of two UInt256 values.
 UInt256 uint256_mul(UInt256 left, UInt256 right) {
   UInt256 product;
-  // TODO: implement
+  product.data[0] = 0U;
+  product.data[1] = 0U;
+  product.data[2] = 0U;
+  product.data[3] = 0U;
+    // TODO: implement
+  for (int i = 0; i < 4; i++) {
+    //for ()
+  }
   return product;
 }
 
@@ -135,5 +142,19 @@ int uint256_bit_is_set(UInt256 val, unsigned index) {
 
 // leftshifts a uint256 by a specified value
 UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
-  // TODO: implement this
+  unsigned index = shift / 64;
+  shift = shift % 64;
+  UInt256 tempval;
+  for (unsigned i = 0; i < index; i++) {
+    for (int j = 0; j < 4; j++) {
+      tempval.data[j] = val.data[j] << 63;
+    }
+  }
+  for (int i = 0; i < 4; i++) {
+    tempval.data[i] = val.data[i] << (shift + index);
+    if (i > 0) {
+      tempval.data[i] += val.data[i-1] >> (64 - shift);
+    }
+  }
+  return tempval;
 }
