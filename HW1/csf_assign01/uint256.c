@@ -119,3 +119,21 @@ UInt256 uint256_mul(UInt256 left, UInt256 right) {
   // TODO: implement
   return product;
 }
+
+// Determine if the bit at an index is set (return 1) or not (return 0)
+int uint256_bit_is_set(UInt256 val, unsigned index) {
+  if (index < 64) {
+    return (val.data[0] && (1UL << index));
+  } else if (index < 128) {
+    return ((val.data[1]) && (1UL << (index - 64)));
+  } else if (index < 192) {
+    return ((val.data[2]) && (1UL << (index - 128)));
+  } else {
+    return ((val.data[3]) && (1UL << (index - 192)));
+  }
+}
+
+// leftshifts a uint256 by a specified value
+UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
+  // TODO: implement this
+}

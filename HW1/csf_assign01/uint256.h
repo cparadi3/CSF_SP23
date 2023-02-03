@@ -45,6 +45,12 @@ UInt256 uint256_sub(UInt256 left, UInt256 right);
 // Compute the product of two UInt256 values.
 UInt256 uint256_mul(UInt256 left, UInt256 right);
 
+// Determine if the bit at an index is set (return 1) or not (return 0)
+int uint256_bit_is_set(UInt256 val, unsigned index);
+
+// leftshifts a uint256 by a specified value
+UInt256 uint256_leftshift(UInt256 val, unsigned shift);
+
 // You may add additional functions if you would like to
 
 #endif // UINT256_H

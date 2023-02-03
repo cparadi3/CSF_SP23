@@ -33,6 +33,7 @@ void test_add_3(TestObjs *objs);
 void test_sub_1(TestObjs *objs);
 void test_sub_2(TestObjs *objs);
 void test_sub_3(TestObjs *objs);
+void test_bit_is_set(TestObjs *objs);
 void test_mul_1(TestObjs *objs);
 void test_mul_2(TestObjs *objs);
 
@@ -54,6 +55,7 @@ int main(int argc, char **argv) {
   TEST(test_sub_1);
   TEST(test_sub_2);
   TEST(test_sub_3);
+  TEST(test_bit_is_set);
   TEST(test_mul_1);
   TEST(test_mul_2);
 
@@ -274,6 +276,21 @@ void test_sub_3(TestObjs *objs) {
   ASSERT(0x0e4243bc3913ceafUL == result.data[1]);
   ASSERT(0xef77ed83d884f494UL == result.data[2]);
   ASSERT(0x4a4b72ebb654226UL == result.data[3]);
+}
+
+void test_bit_is_set(TestObjs *objs) {
+  //bit is set helper function tests
+ //UInt256 val = objs->one;
+ ASSERT(uint256_bit_is_set(objs->one, 0) == 1);
+ 
+ UInt256 val;
+ val.data[0] = 0UL;
+ val.data[1] = 0x100000UL;
+ val.data[2] = 0UL;
+ val.data[3] = 0UL; 
+ ASSERT(uint256_bit_is_set(val, 84) == 1);
+
+
 }
 
 void test_mul_1(TestObjs *objs) {
