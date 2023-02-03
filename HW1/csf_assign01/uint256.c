@@ -63,11 +63,13 @@ char *uint256_format_as_hex(UInt256 val) {
     size--;
     
   }
-  hex = malloc((size+1)*sizeof(char));
+  
+  hex = malloc((size + 1)*sizeof(char));
   //hex = buf;
   for (int i = 0; i <= size; i++){
     *(hex + i) = *(buf + i);
   }
+  free(buf - (64 - size));
   return hex;
 }
 
