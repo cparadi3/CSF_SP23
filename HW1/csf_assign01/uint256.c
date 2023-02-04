@@ -116,15 +116,18 @@ UInt256 uint256_sub(UInt256 left, UInt256 right) {
 // Compute the product of two UInt256 values.
 UInt256 uint256_mul(UInt256 left, UInt256 right) {
   UInt256 product;
+  UInt256 temp; 
   product.data[0] = 0U;
   product.data[1] = 0U;
   product.data[2] = 0U;
   product.data[3] = 0U;
     // TODO: implement
   for (int i = 0; i < 4; i++) {
-    for (int j = 0; i < 64; j++) {
+    for (int j = 0; j < 64; j++) {
       if (uint256_bit_is_set(left, (i * 64) + j)) {
-        uint256_add(product, uint256_leftshift(right, ((i * 64) + j)));
+        temp = uint256_leftshift(right, ((i * 64) + j));
+        product = uint256_add(product, temp);
+        printf("add called\n");
       }
     }
   }
@@ -134,30 +137,43 @@ UInt256 uint256_mul(UInt256 left, UInt256 right) {
 // Determine if the bit at an index is set (return 1) or not (return 0)
 int uint256_bit_is_set(UInt256 val, unsigned index) {
   if (index < 64) {
-    return (val.data[0] && (1UL << index));
+  int set = (val.data[0] & (1UL << index));
+    return set;
   } else if (index < 128) {
-    return ((val.data[1]) && (1UL << (index - 64)));
+    return ((val.data[1]) & (1UL << (index - 64)));
+    //int set = (val.data[1] & (1UL << (index - 64)));
+    //(((val.data[1]) & (1UL << (index - 64)))) ? return 1 : return 0;
   } else if (index < 192) {
-    return ((val.data[2]) && (1UL << (index - 128)));
+    return ((val.data[2]) & (1UL << (index - 128)));
+    //int set = (val.data[1] & (1UL << (index - 128)));
+    //return (((val.data[2]) & (1UL << (index - 128))) ? return 1 : return 0;
   } else {
-    return ((val.data[3]) && (1UL << (index - 192)));
+    return ((val.data[3]) & (1UL << (index - 192)));
+    //int set = (val.data[1] & (1UL << (index - 192)));
+    
   }
 }
 
 // leftshifts a uint256 by a specified value
 UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
-  unsigned index = shift / 64;
-  shift = shift % 64;
-  UInt256 tempval;
-  for (unsigned i = 0; i < index; i++) {
-    for (int j = 0; j < 4; j++) {
-      tempval.data[j] = val.data[j] << 63;
+  int index = shift / 64;
+  shift = (int) shift % 64;
+  UInt256 tempval = val;
+  for (int i = 0; i < index; i++) {
+    tempval.data[0] = tempval.data[0] << 63;
+    tempval.data[1] = tempval.data[1] << 63;
+    tempval.data[2] = tempval.data[2] << 63;
+    tempval.data[3] = tempval.data[3] << 63;
+    if (i > 0) {
+      //tempval.data[1] += val.data[0] >> (1);
+      tempval.data[2] += val.data[3] >> (1);
+      tempval.data[3] += val.data[4] >> (1);
     }
   }
   for (int i = 0; i < 4; i++) {
     tempval.data[i] = val.data[i] << (shift + index);
     if (i > 0) {
-      tempval.data[i] += val.data[i-1] >> (64 - shift);
+      tempval.data[i] += val.data[i-1] >> (63 - shift);
     }
   }
   return tempval;
