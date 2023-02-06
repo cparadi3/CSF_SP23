@@ -188,9 +188,9 @@ UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
     //tempval.data[3] = tempval.data[3] << 63;
     if (index == 1) {
       tempval.data[0] = 0U;
-      tempval.data[1] += val.data[0] ;//>> (1);
-      tempval.data[2] += val.data[1] ;//>> (1);
-      tempval.data[3] += val.data[2] ;//>> (1);
+      tempval.data[1] = val.data[0] ;//>> (1);
+      tempval.data[2] = val.data[1] ;//>> (1);
+      tempval.data[3] = val.data[2] ;//>> (1);
     
     } else if (index == 2) {
       tempval.data[0] = 0U;
