@@ -131,7 +131,6 @@ UInt256 uint256_mul(UInt256 left, UInt256 right) {
       }
     }
   }
-  printf(" %s \n", uint256_format_as_hex(product));
   return product;
 }
 
