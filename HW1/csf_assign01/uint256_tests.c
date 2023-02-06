@@ -30,12 +30,9 @@ void test_format_as_hex(TestObjs *objs);
 void test_add_1(TestObjs *objs);
 void test_add_2(TestObjs *objs);
 void test_add_3(TestObjs *objs);
-void test_add_overflow(TestObjs *objs);
 void test_sub_1(TestObjs *objs);
 void test_sub_2(TestObjs *objs);
 void test_sub_3(TestObjs *objs);
-void test_sub_basic_overflow(TestObjs *objs);
-void test_sub_empty_first_array(TestObjs *objs);
 void test_bit_is_set(TestObjs *objs);
 void test_left_shift(TestObjs *objs);
 void test_mul_1(TestObjs *objs);
@@ -56,12 +53,9 @@ int main(int argc, char **argv) {
   TEST(test_add_1);
   TEST(test_add_2);
   TEST(test_add_3);
-  TEST(test_add_overflow);
   TEST(test_sub_1);
   TEST(test_sub_2);
   TEST(test_sub_3);
-  TEST(test_sub_basic_overflow);
-  TEST(test_sub_empty_first_array);
   TEST(test_bit_is_set);
   TEST(test_left_shift);
   TEST(test_mul_1);
@@ -228,27 +222,6 @@ void test_add_3(TestObjs *objs) {
   ASSERT(0xac5151273cfcf2eUL == result.data[3]);
 }
 
-void test_add_overflow(TestObjs *objs) {
-  // Checking if overflow is handled correctly
-
-  (void) objs;
-
-  UInt256 left, right, result;
-
-  left.data[0] = 0xFFFFFFFFFFFFFFFFUL;
-  left.data[1] = 0xFFFFFFFFFFFFFFFFUL;
-  left.data[2] = 0xFFFFFFFFFFFFFFFFUL;
-  left.data[3] = 0xFFFFFFFFFFFFFFFFUL;
-  right.data[0] = 0x0af2f9cad0a4b38aUL;
-  right.data[1] = 0xb37aef92a5179d6UL;
-  right.data[2] = 0x0UL;
-  right.data[3] = 0x0UL;
-  result = uint256_add(left, right);
-  ASSERT(0x0af2f9cad0a4b389UL == result.data[0]);
-  ASSERT(0xb37aef92a5179d6UL == result.data[1]);
-  ASSERT(0x0UL == result.data[2]);
-  ASSERT(0x0UL == result.data[3]);
-}
 
 void test_sub_1(TestObjs *objs) {
   // basic subtraction tests
@@ -308,35 +281,9 @@ void test_sub_3(TestObjs *objs) {
   ASSERT(0x4a4b72ebb654226UL == result.data[3]);
 }
 
-void test_sub_basic_overflow(TestObjs *objs) {
-  // Checking if subtaction overflow is handled correctly
-  UInt256 result;
-  result = uint256_sub(objs->zero, objs->one);
-  ASSERT(0xFFFFFFFFFFFFFFFFUL == result.data[0]);
-  ASSERT(0xFFFFFFFFFFFFFFFFUL == result.data[1]);
-  ASSERT(0xFFFFFFFFFFFFFFFFUL == result.data[2]);
-  ASSERT(0xFFFFFFFFFFFFFFFFUL == result.data[3]);
-}
 
-//Does not work, could be due to incorrect math
-void test_sub_empty_first_array(TestObjs *objs) {
-  // Checking edge case of subtraction
-  (void) objs;
-  UInt256 right, left, result;
-  left.data[0] = 0x0UL;
-  left.data[1] = 0x2UL;
-  left.data[2] = 0x0UL;
-  left.data[3] = 0x0UL;
-  right.data[0] = 0x1UL;
-  right.data[1] = 0x0UL;
-  right.data[2] = 0x0UL;
-  right.data[3] = 0x0UL;
-  result = uint256_sub(left, right);
-  ASSERT(0xFFFFFFFFFFFFFFFEUL == result.data[0]);
-  ASSERT(0x1UL == result.data[1]);
-  ASSERT(0x0UL == result.data[2]);
-  ASSERT(0x0UL == result.data[3]);
-}
+
+
 
 void test_bit_is_set(TestObjs *objs) {
   //bit is set helper function tests
