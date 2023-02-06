@@ -12,6 +12,7 @@ typedef struct {
   const char *hex1;
   const char *hex2;
   const char *hex3;
+  const char *hex4;
 } TestObjs;
 
 // Functions to create and cleanup the test fixture object
@@ -95,6 +96,7 @@ TestObjs *setup(void) {
   objs->hex1 = "0";
   objs->hex2 = "cafe";
   objs->hex3 = "4a4b72ebb654226ef77ed83d884f4940e4243bc3913ceaf5781b28d25fb00b0";
+  objs->hex4 = "b2cd89a03cd22567";
 
   return objs;
 }
@@ -155,7 +157,15 @@ void test_create_from_hex(TestObjs *objs) {
 
   val = uint256_create_from_hex(objs->hex2);
   ASSERT(check(val, 0x0UL, 0x0UL, 0x0UL, 0xcafeUL));
+
+  val = uint256_create_from_hex(objs->hex4);
+  ASSERT(check(val, 0x0UL, 0x0UL, 0x0UL, 0xb2cd89a03cd22567UL));
+
+  val = uint256_create_from_hex(objs->hex3);
+  ASSERT(check(val, 0x4a4b72ebb654226UL, 0xef77ed83d884f494UL, 0x0e4243bc3913ceafUL, 0x5781b28d25fb00b0UL));
+  
 }
+
 
 void test_format_as_hex(TestObjs *objs) {
   char *s;
@@ -361,7 +371,6 @@ void test_left_shift(TestObjs *objs) {
   ASSERT(temp.data[1] == 0x2000000UL);
   val = objs->one;
   temp = (uint256_leftshift(val, 64UL));
-  printf( " %ld \n", temp.data[1]);
   ASSERT(temp.data[1] == 1U);
 }
 
