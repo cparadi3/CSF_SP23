@@ -30,7 +30,7 @@ void test_format_as_hex(TestObjs *objs);
 void test_add_1(TestObjs *objs);
 void test_add_2(TestObjs *objs);
 void test_add_3(TestObjs *objs);
-void test_add_overflow(TestObjs);
+void test_add_overflow(TestObjs *objs);
 void test_sub_1(TestObjs *objs);
 void test_sub_2(TestObjs *objs);
 void test_sub_3(TestObjs *objs);
@@ -359,6 +359,10 @@ void test_left_shift(TestObjs *objs) {
   val.data[3] = 0UL; 
   temp = uint256_leftshift(val, 5UL);
   ASSERT(temp.data[1] == 0x2000000UL);
+  val = objs->one;
+  temp = (uint256_leftshift(val, 64UL));
+  printf( " %ld \n", temp.data[1]);
+  ASSERT(temp.data[1] == 1U);
 }
 
 void test_mul_1(TestObjs *objs) {
