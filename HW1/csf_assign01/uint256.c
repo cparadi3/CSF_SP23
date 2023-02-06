@@ -30,7 +30,17 @@ UInt256 uint256_create(const uint64_t data[4]) {
 // Create a UInt256 value from a string of hexadecimal digits.
 UInt256 uint256_create_from_hex(const char *hex) {
   UInt256 result;
-  //FREE THIS
+  char* tempArr[64] = {NULL};
+  int size = (sizeof(hex) / sizeof(char));
+  printf("%d\n", size);
+  for (int i = 0; i < 64; i++) {
+    *tempArr[i] = hex[i];
+  }
+  result.data[0] = strtoul(tempArr[0], &tempArr[15], 16);
+  result.data[1] = strtoul(tempArr[16], &tempArr[31], 16);
+  result.data[2] = strtoul(tempArr[32], &tempArr[47], 16);
+  result.data[3] = strtoul(tempArr[48], &tempArr[63], 16);
+  /*
   char *ptr = NULL;
   char* strcpy(char* ptr, const char* hex);
   ptr += 16;
@@ -42,6 +52,7 @@ UInt256 uint256_create_from_hex(const char *hex) {
   ptr2 += 32;
   result.data[3] = strtoul(ptr, &ptr2, 16);
   //free memory
+  */
   return result;
 }
 
