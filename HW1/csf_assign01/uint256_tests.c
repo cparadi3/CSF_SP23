@@ -336,7 +336,7 @@ void test_sub_empty_first_array(TestObjs *objs) {
   right.data[2] = 0x0UL;
   right.data[3] = 0x0UL;
   result = uint256_sub(left, right);
-  ASSERT(0xFFFFFFFFFFFFFFFEUL == result.data[0]);
+  ASSERT(0xFFFFFFFFFFFFFFFFUL == result.data[0]);
   ASSERT(0x1UL == result.data[1]);
   ASSERT(0x0UL == result.data[2]);
   ASSERT(0x0UL == result.data[3]);

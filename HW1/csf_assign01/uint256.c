@@ -30,29 +30,48 @@ UInt256 uint256_create(const uint64_t data[4]) {
 // Create a UInt256 value from a string of hexadecimal digits.
 UInt256 uint256_create_from_hex(const char *hex) {
   UInt256 result;
-  char* tempArr[64] = {NULL};
-  int size = (sizeof(hex) / sizeof(char));
-  printf("%d\n", size);
-  for (int i = 0; i < 64; i++) {
-    *tempArr[i] = hex[i];
-  }
-  result.data[0] = strtoul(tempArr[0], &tempArr[15], 16);
-  result.data[1] = strtoul(tempArr[16], &tempArr[31], 16);
-  result.data[2] = strtoul(tempArr[32], &tempArr[47], 16);
-  result.data[3] = strtoul(tempArr[48], &tempArr[63], 16);
-  /*
   char *ptr = NULL;
-  char* strcpy(char* ptr, const char* hex);
-  ptr += 16;
-  result.data[0] = strtoul((hex), &(ptr), 16);
-  char* ptr2 = ptr + 16;
-  result.data[1] = strtoul(ptr, &ptr2, 16);
-  ptr += 32;
-  result.data[2] = strtoul(ptr2, &ptr, 16);
-  ptr2 += 32;
-  result.data[3] = strtoul(ptr, &ptr2, 16);
-  //free memory
-  */
+  char* array = malloc(64*sizeof(char)); //malloc(65*sizeof(char))
+   int size = 0;
+  for (int i = 0; i < 64; i++) {
+    *(array + i) = '0';
+  }
+  int i = 0; 
+  while (*(hex + i) != (char) 0) {
+    size +=1;
+    i +=1;
+  }
+  for (int i = 0; i < 64; i++) {
+    if((*(hex + i) != (char) 0)) {
+      *(array + 64 + i - size) = *(hex + i);
+      ptr += 1;
+    } else {
+      break;
+    }
+  }
+  char* array0 = malloc(16*sizeof(char));
+  char* array1 = malloc(16*sizeof(char)); 
+  char* array2 = malloc(16*sizeof(char));
+  char* array3 = malloc(16*sizeof(char));
+  for(int i = 0; i < 16; i++) {
+    *(array0 + i) = *(array + i + 48);
+    *(array1 + i) = *(array + i + 32);
+    *(array2 + i) = *(array + i + 16);
+    *(array3 + i) = *(array + i);
+  }
+  result.data[0] = strtoul(array0, &(ptr), 16);
+   char* ptr2 = (array + 16);
+  result.data[1] = strtoul((array1) , &(ptr), 16);
+   //ptr += 32;
+  //ptr2 += 16;
+  result.data[2] = strtoul((array2), &(ptr), 16);
+  //ptr2 += 16;
+  result.data[3] = strtoul((array3), &(ptr), 16);
+  free(array);
+  free(array0);
+  free(array1);
+  free(array2);
+  free(array3);
   return result;
 }
 
