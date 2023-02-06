@@ -60,7 +60,7 @@ UInt256 uint256_create_from_hex(const char *hex) {
     *(array3 + i) = *(array + i);
   }
   result.data[0] = strtoul(array0, &(ptr), 16);
-   char* ptr2 = (array + 16);
+   //char* ptr2 = (array + 16);
   result.data[1] = strtoul((array1) , &(ptr), 16);
    //ptr += 32;
   //ptr2 += 16;
