@@ -32,15 +32,19 @@ void test_add_1(TestObjs *objs);
 void test_add_2(TestObjs *objs);
 void test_add_3(TestObjs *objs);
 void test_add_overflow(TestObjs *objs);
+void test_add_zero(TestObjs *objs);
 void test_sub_1(TestObjs *objs);
 void test_sub_2(TestObjs *objs);
 void test_sub_3(TestObjs *objs);
 void test_sub_basic_overflow(TestObjs *objs);
+void test_multiple_sub_overflow(TestObjs *objs);
 void test_sub_empty_first_array(TestObjs *objs);
 void test_bit_is_set(TestObjs *objs);
 void test_left_shift(TestObjs *objs);
 void test_mul_1(TestObjs *objs);
 void test_mul_2(TestObjs *objs);
+void test_mul_3(TestObjs *objs);
+void test_mul_by_0(TestObjs *objs);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -58,16 +62,19 @@ int main(int argc, char **argv) {
   TEST(test_add_2);
   TEST(test_add_3);
   TEST(test_add_overflow);
+  TEST(test_add_zero);
   TEST(test_sub_1);
   TEST(test_sub_2);
   TEST(test_sub_3);
   TEST(test_sub_basic_overflow);
+  TEST(test_multiple_sub_overflow);
   TEST(test_sub_empty_first_array);
   TEST(test_bit_is_set);
   TEST(test_left_shift);
   TEST(test_mul_1);
   TEST(test_mul_2);
-
+  TEST(test_mul_3);
+  TEST(test_mul_by_0);
   TEST_FINI();
 }
 
@@ -237,6 +244,7 @@ void test_add_3(TestObjs *objs) {
   ASSERT(0xc7aa07a5c1cba880UL == result.data[2]);
   ASSERT(0xac5151273cfcf2eUL == result.data[3]);
 }
+
 void test_add_overflow(TestObjs *objs) {
   // Checking if overflow is handled correctly
   (void) objs;
@@ -254,6 +262,21 @@ void test_add_overflow(TestObjs *objs) {
   ASSERT(0xb37aef92a5179d6UL == result.data[1]);
   ASSERT(0x0UL == result.data[2]);
   ASSERT(0x0UL == result.data[3]);
+}
+
+//Testing an additional addition of zero
+void test_add_zero(TestObjs *objs) {
+  (void) objs;
+  UInt256 left, result;
+  left.data[0] = 0x1e18623bddd54a29UL;
+  left.data[1] = 0x0a6dc2c9931649eeUL;
+  left.data[2] = 0x35179059fcb8b7e4UL;
+  left.data[3] = 0x736740fc9f63198UL;
+  result = uint256_add(left, objs->zero);
+  ASSERT(0x1e18623bddd54a29UL == result.data[0]);
+  ASSERT(0x0a6dc2c9931649eeUL == result.data[1]);
+  ASSERT(0x35179059fcb8b7e4UL == result.data[2]);
+  ASSERT(0x736740fc9f63198UL == result.data[3]);
 }
 
 void test_sub_1(TestObjs *objs) {
@@ -322,7 +345,7 @@ void test_sub_basic_overflow(TestObjs *objs) {
   ASSERT(0xFFFFFFFFFFFFFFFFUL == result.data[2]);
   ASSERT(0xFFFFFFFFFFFFFFFFUL == result.data[3]);
 }
-//Does not work, could be due to incorrect math
+
 void test_sub_empty_first_array(TestObjs *objs) {
   // Checking edge case of subtraction
   (void) objs;
@@ -342,6 +365,24 @@ void test_sub_empty_first_array(TestObjs *objs) {
   ASSERT(0x0UL == result.data[3]);
 }
 
+//Testing multiple negative overflows in one subtraction
+void test_multiple_sub_overflow(TestObjs *objs) {
+  (void) objs;
+  UInt256 right, left, result;
+  left.data[0] = 0x0UL;
+  left.data[1] = 0x2UL;
+  left.data[2] = 0x0UL;
+  left.data[3] = 0x2UL;
+  right.data[0] = 0x1UL;
+  right.data[1] = 0x0UL;
+  right.data[2] = 0x1UL;
+  right.data[3] = 0x0UL;
+  result = uint256_sub(left, right);
+  ASSERT(0xFFFFFFFFFFFFFFFFUL == result.data[0]);
+  ASSERT(0x1UL == result.data[1]);
+  ASSERT(0xFFFFFFFFFFFFFFFFUL == result.data[2]);
+  ASSERT(0x1UL == result.data[3]);
+}
 void test_bit_is_set(TestObjs *objs) {
   //bit is set helper function tests
  //UInt256 val = objs->one;
@@ -405,4 +446,42 @@ void test_mul_2(TestObjs *objs) {
   ASSERT(0xe6117fa57cddf52eUL == result.data[1]);
   ASSERT(0x61abad710163aa9bUL == result.data[2]);
   ASSERT(0x991f2125eacd3UL == result.data[3]);
+}
+
+//Testing multiply with some genfact numbers
+void test_mul_3(TestObjs *objs) {
+  (void) objs;
+  UInt256 left, right, result;
+  left.data[0] = 0xfac530e7002ffc1fUL;
+  left.data[1] = 0xfd0a4771b6dd475UL;
+  left.data[2] = 0x0UL;
+  left.data[3] = 0x0UL;
+  right.data[0] = 0xf32cda1f850abe81UL;
+  right.data[1] = 0x91e5f67072e2011UL;
+  right.data[2] = 0x0UL;
+  right.data[3] = 0x0UL;
+  result = uint256_mul(left, right);
+  ASSERT(0x489df427a9830d9fUL == result.data[0]);
+  ASSERT(0x66dc4a8b0d98b26fUL == result.data[1]);
+  ASSERT(0xd64324afd283c924UL == result.data[2]);
+  ASSERT(0x90362040580068UL == result.data[3]);
+}
+//More comprehensive test for multiplying by zero
+void test_mul_by_0(TestObjs *objs) {
+  (void) objs;
+  UInt256 left, result;
+  left.data[0] = 0xfac530e7002ffc1fUL;
+  left.data[1] = 0xfd0a4771b6dd475UL;
+  left.data[2] = 0x0UL;
+  left.data[3] = 0x0UL;
+  result = uint256_mul(left, objs->zero);
+  ASSERT(0x0UL == result.data[0]);
+  ASSERT(0x0UL == result.data[1]);
+  ASSERT(0x0UL == result.data[2]);
+  ASSERT(0x0UL == result.data[3]);
+  result = uint256_mul(objs->zero,left);
+  ASSERT(0x0UL == result.data[0]);
+  ASSERT(0x0UL == result.data[1]);
+  ASSERT(0x0UL == result.data[2]);
+  ASSERT(0x0UL == result.data[3]);
 }

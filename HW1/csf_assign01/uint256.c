@@ -31,7 +31,7 @@ UInt256 uint256_create(const uint64_t data[4]) {
 UInt256 uint256_create_from_hex(const char *hex) {
   UInt256 result;
   char *ptr = NULL;
-  char* array = malloc(64*sizeof(char)); //malloc(65*sizeof(char))
+  char* array = malloc(64*sizeof(char));
    int size = 0;
   for (int i = 0; i < 64; i++) {
     *(array + i) = '0';
@@ -60,12 +60,8 @@ UInt256 uint256_create_from_hex(const char *hex) {
     *(array3 + i) = *(array + i);
   }
   result.data[0] = strtoul(array0, &(ptr), 16);
-   //char* ptr2 = (array + 16);
   result.data[1] = strtoul((array1) , &(ptr), 16);
-   //ptr += 32;
-  //ptr2 += 16;
   result.data[2] = strtoul((array2), &(ptr), 16);
-  //ptr2 += 16;
   result.data[3] = strtoul((array3), &(ptr), 16);
   free(array);
   free(array0);
@@ -80,22 +76,16 @@ UInt256 uint256_create_from_hex(const char *hex) {
 char *uint256_format_as_hex(UInt256 val) {
   char *hex = NULL;
   char *buf = malloc(65*sizeof(char));
-  //uint64_t tempval = val.data[3];
   sprintf(buf, "%016lx", val.data[3]);
   sprintf(buf + 16, "%016lx", val.data[2]);
   sprintf(buf + 32, "%016lx", val.data[1]);
   sprintf(buf + 48, "%016lx", val.data[0]);
-  // TODO: implement
   int size = 64;
- 
   while ((*buf == '0') && (size > 1)) {
     buf += 1;
     size--;
-    
   }
-  
   hex = malloc((size + 1)*sizeof(char));
-  //hex = buf;
   for (int i = 0; i <= size; i++){
     *(hex + i) = *(buf + i);
   }
@@ -116,7 +106,6 @@ uint64_t uint256_get_bits(UInt256 val, unsigned index) {
 UInt256 uint256_add(UInt256 left, UInt256 right) {
   UInt256 sum;
   uint64_t carry = 0U;
-  // TODO: implement
   for (int i = 0; i < 4; i++) {
     sum.data[i] = left.data[i] + right.data[i] + carry;
     if ((sum.data[i] < right.data[i]) || (sum.data[i] < left.data[i])) {
