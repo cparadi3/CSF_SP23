@@ -31,6 +31,7 @@ void test_format_as_hex(TestObjs *objs);
 void test_add_1(TestObjs *objs);
 void test_add_2(TestObjs *objs);
 void test_add_3(TestObjs *objs);
+void test_add_4(TestObjs *objs);
 void test_add_overflow(TestObjs *objs);
 void test_add_zero(TestObjs *objs);
 void test_sub_1(TestObjs *objs);
@@ -61,6 +62,7 @@ int main(int argc, char **argv) {
   TEST(test_add_1);
   TEST(test_add_2);
   TEST(test_add_3);
+  TEST(test_add_4);
   TEST(test_add_overflow);
   TEST(test_add_zero);
   TEST(test_sub_1);
@@ -245,6 +247,25 @@ void test_add_3(TestObjs *objs) {
   ASSERT(0xac5151273cfcf2eUL == result.data[3]);
 }
 
+//Testing add with genfact numbers
+void test_add_4(TestObjs *objs) {
+(void) objs;
+UInt256 left, right, result;
+left.data[3] = 0x842d008da3a7a97UL;
+left.data[2] = 0x0be09ec8bd8e5652UL;
+left.data[1] = 0xe8d23ad68b273164UL;
+left.data[0] = 0xd656cb1e9a2e25b5UL;
+right.data[3] = 0xfa1aeeb64645f75UL;
+right.data[2] = 0xc21d2f036bef0366UL;
+right.data[1] = 0x170aa6a60409961bUL;
+right.data[0] = 0x38082974e9a5626dUL;
+result = uint256_add(left,right);
+ASSERT(0x17e47ef43e9eda0cUL == result.data[3]);
+ASSERT(0xcdfdcdcc297d59b8UL == result.data[2]);
+ASSERT(0xffdce17c8f30c780UL == result.data[1]);
+ASSERT(0x0e5ef49383d38822UL == result.data[0]);
+}
+
 void test_add_overflow(TestObjs *objs) {
   // Checking if overflow is handled correctly
   (void) objs;
@@ -385,19 +406,16 @@ void test_multiple_sub_overflow(TestObjs *objs) {
 }
 void test_bit_is_set(TestObjs *objs) {
   //bit is set helper function tests
- //UInt256 val = objs->one;
  ASSERT(uint256_bit_is_set(objs->one, 0) == 1);
- 
  UInt256 val;
  val.data[0] = 0UL;
  val.data[1] = 0x100000UL;
  val.data[2] = 0UL;
  val.data[3] = 0UL; 
  ASSERT(uint256_bit_is_set(val, 84) == 1);
-
-
 }
 
+//Testing the left shift helper method
 void test_left_shift(TestObjs *objs) {
   UInt256 val;
   val = objs->one;
