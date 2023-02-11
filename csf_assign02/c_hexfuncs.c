@@ -8,11 +8,23 @@
 // Read up to 16 bytes from standard input into data_buf.
 // Returns the number of characters read.
 unsigned hex_read(char data_buf[]) {
-    return 0;
+    unsigned charsRead = read(0, data_buf, 16);
+    return charsRead;
 }
 
 // Write given nul-terminated string to standard output.
-void hex_write_string(const char s[]) {}
+void hex_write_string(const char s[]) {
+    int length = 0;
+    char tempChar;
+    for (int i = 0; i < 32; i++) {
+        tempChar = s[i];
+        if (tempChar == '\0') {
+            break;
+        }
+        length++;
+    }
+    write(1,s,length);
+}
 
 // Format an unsigned value as an offset string consisting of exactly 8
 // hex digits.  The formatted offset is stored in sbuf, which must
