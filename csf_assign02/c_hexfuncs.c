@@ -16,7 +16,7 @@ unsigned hex_read(char data_buf[]) {
 void hex_write_string(const char s[]) {
     int length = 0;
     char tempChar;
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 16; i++) {
         tempChar = s[i];
         if (tempChar == '\0') {
             break;
@@ -41,7 +41,7 @@ void hex_format_offset(unsigned offset, char sbuf[]) {
         index++;
     }
     sbuf[7] = hexVals[offset % 16]; 
-    sbuf[8] = 0;
+    sbuf[8] = '\0';
 }
 
 // Format a byte value (in the range 0-255) as string consisting
@@ -50,6 +50,7 @@ void hex_format_byte_as_hex(unsigned char byteval, char sbuf[]) {
     char hexVals[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     sbuf[0] = hexVals[byteval / 16];
     sbuf[1] = hexVals[byteval % 16];
+    sbuf[2] = '\0';
 }
 
 // Convert a byte value (in the range 0-255) to a printable character
