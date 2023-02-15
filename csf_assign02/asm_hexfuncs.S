@@ -62,8 +62,30 @@ hex_format_offset:
 	ret
 
 .globl hex_format_byte_as_hex
+/*
+* Format a byte value (in the range 0-255) as string consisting
+* of two hex digits.  The string is stored in sbuf.
+*
+* Parameters: 
+*	sbuf - 
+*   byteval - 
+* 
+* Returns:
+*	nothing
+*/
 hex_format_byte_as_hex:
-	/* TODO: implement */
+	subq $8, %rsp
+	leaq hexVals, %r10
+	movq (%r10, %rdi, 1), %rax
+	movq $16, %r12
+	divq %r12
+	movq %rax, (%rsi)
+	movq $1, %r12
+	movq %rdx, (%rsi, %r12, 1)
+	incl %r12d
+	movq $0, (%rsi, %r12, 1)
+
+
 	ret
 
 /* vim:ft=gas:
