@@ -53,15 +53,29 @@ void testFormatOffset(TestObjs *objs) {
 
   hex_format_offset(0xabcd1234u, buf);
   ASSERT(0 == strcmp(buf, "abcd1234"));
+  
+  hex_format_offset(0xffff1111u, buf);
+  ASSERT(0 == strcmp(buf, "ffff1111"));
+  
+  hex_format_offset(0x10101010u, buf);
+  ASSERT(0 == strcmp(buf, "10101010"));
 }
 
 void testFormatByteAsHex(TestObjs *objs) {
   char buf[16];
   hex_format_byte_as_hex(objs->test_data_1[0], buf);
   ASSERT(0 == strcmp(buf, "48"));
+  hex_format_byte_as_hex('!', buf);
+  ASSERT(0 == strcmp(buf, "21"));
+  hex_format_byte_as_hex('[', buf);
+  ASSERT(0 == strcmp(buf, "5b"));
+  hex_format_byte_as_hex('o', buf);
+  ASSERT(0 == strcmp(buf, "6f"));
+  hex_format_byte_as_hex('.', buf);
+  ASSERT(0 == strcmp(buf, "2e"));
 }
 
 void testHexToPrintable(TestObjs *objs) {
   ASSERT('H' == hex_to_printable(objs->test_data_1[0]));
   ASSERT('.' == hex_to_printable(objs->test_data_1[13]));
-}
+  }
