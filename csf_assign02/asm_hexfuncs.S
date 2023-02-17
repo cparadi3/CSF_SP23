@@ -76,16 +76,19 @@ hex_format_offset:
 hex_format_byte_as_hex:
 	subq $8, %rsp       /* align stack */
 	movq %rdi, %rax     /* move input value into rdx */
-	movq $16, %rsi
-	movq $0, %rdx
-	divq %rsi           /*divide %rax by 16 */
-	movq %rax, %rsi
-	movq %rdx, %r10		/* free up rdx */
-	movq $hexVals, %rdx
-	movq $1, %r12
-	movq %rdx, (%rsi, %r12, 1)
-	incl %r12d
-	movq $0, (%rsi, %r12, 1)
+	movq $16, %r11		/* move 16 into %r11 */
+	movq $0, %rdx		/* set to zero for unsigned division */
+	divq %r11           /*divide %rax by 16 - quotient stored in rax & rmdr stored in rdx */
+	movq $0, %r12		/* %r12 becomes index for inserting in buf (rsi)*/
+	movq %rdx, %r10 	/* move %rdx to %r10 so %rdx can be overwritten */
+	movq $hexVals, %rdx		/* move pointer to hexVals into %rdx */
+	movq (%rdx, %rax, 1), %r13 	/* use quotient as index in rdx to find first hex value, store to %r13 */
+	movq %r13, (%rsi, %r12, 1) 	/*move %r13 to the %r12 (counter) index in buf (%rsi) */
+	incl %r12d			/* increment counter */
+	movq (%rdx, %r10, 1), %r13 	/* use remainder as index in rdx to get second hex value, store in %r13 */
+	movq %r13, (%rsi, %r12, 1)	/*move %r13 to the %r12 (counter) index in buf (%rsi) */
+	incl %r12d				/* increment counter */
+	movq $0, (%rsi, %r12, 1)	/* move null terminator into final inedex of buf */
 	addq $8, %rsp
 
 
