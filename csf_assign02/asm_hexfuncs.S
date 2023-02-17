@@ -74,12 +74,14 @@ hex_format_offset:
 *	nothing
 */
 hex_format_byte_as_hex:
-	subq $8, %rsp
-	movq $hexVals, %r10
+	subq $8, %rsp       /* align stack */
 	movq %rdi, %rax     /* move input value into rdx */
-	movq $16, %r12
-	divq %r12           /*divide %rax by 16 */
-	movq %rax, (%rsi)
+	movq $16, %rsi
+	movq $0, %rdx
+	divq %rsi           /*divide %rax by 16 */
+	movq %rax, %rsi
+	movq %rdx, %r10		/* free up rdx */
+	movq $hexVals, %rdx
 	movq $1, %r12
 	movq %rdx, (%rsi, %r12, 1)
 	incl %r12d
