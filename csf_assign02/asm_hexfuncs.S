@@ -75,15 +75,16 @@ hex_format_offset:
 */
 hex_format_byte_as_hex:
 	subq $8, %rsp
-	leaq hexVals, %r10
-	movq (%r10, %rdi, 1), %rax
+	movq $hexVals, %r10
+	movq %rdi, %rax     /* move input value into rdx */
 	movq $16, %r12
-	divq %r12
+	divq %r12           /*divide %rax by 16 */
 	movq %rax, (%rsi)
 	movq $1, %r12
 	movq %rdx, (%rsi, %r12, 1)
 	incl %r12d
 	movq $0, (%rsi, %r12, 1)
+	addq $8, %rsp
 
 
 	ret
