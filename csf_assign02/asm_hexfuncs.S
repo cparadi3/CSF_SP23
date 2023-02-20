@@ -101,7 +101,7 @@ hex_format_offset:
 	jmp .LhexLoop
 .LhexLoop:
 	movq %rax, %r10
-	shr %esi, %r10 /*Left shift offset by index*4 , getting index of hexvals to put in sbuf, then decrement index and run loop again */
+	shr $8, %r10 /*Left shift offset by index*4 , getting index of hexvals to put in sbuf, then decrement index and run loop again */
 	shl $4, %r14
 	subq %r14, %r10
 	movq (%r10, %rax, 1), %r13 	/* use quotient as index in rdx to find first hex value, store to %r13 */
@@ -116,5 +116,18 @@ hex_format_offset:
 	addq $8, %rsp
 	ret
 
+.globl hex_read
+
+hex_read:
+	subq $8, %rsp
+	call read
+	ret
+
+
+.globl hex_write_string
+
+hex_write_string:
+
+	ret
 /* vim:ft=gas:
  */
