@@ -56,11 +56,6 @@ hex_to_printable:
 	addq $8, %rsp		/* restore stack pointer*/
 	ret
 
-.globl hex_format_offset
-hex_format_offset:
-	/* TODO: implement */
-	ret
-
 .globl hex_format_byte_as_hex
 /*
 * Format a byte value (in the range 0-255) as string consisting
@@ -90,8 +85,35 @@ hex_format_byte_as_hex:
 	incl %r12d				/* increment counter */
 	movq $0, (%rsi, %r12, 1)	/* move null terminator into final inedex of buf */
 	addq $8, %rsp
+	ret
 
+.globl hex_format_offset
 
+hex_format_offset:
+	subq $8, %rsp
+	movq %rdi, %rax /*Moving offset into rax*/
+	movl $28, %esi /*Setting up index counter for offset in r11*/
+	movq $0, %r13 /*Freeing up r13 to hold the char in hexVals*/
+	movq $0, %r12 /*Freeing up r12 to hold loop counter*/
+	movq $0, %r10 /*Temp val to to change offset*/
+	movq $0, %r14
+	movq $hexVals, %rdx /*Moving hexVals pointer into rdx*/
+	jmp .LhexLoop
+.LhexLoop:
+	movq %rax, %r10
+	shr %esi, %r10 /*Left shift offset by index*4 , getting index of hexvals to put in sbuf, then decrement index and run loop again */
+	shl $4, %r14
+	subq %r14, %r10
+	movq (%r10, %rax, 1), %r13 	/* use quotient as index in rdx to find first hex value, store to %r13 */
+	movq %r13, (%rsi, %r12, 1) 	/*move %r13 to the %r12 (counter) index in buf (%rsi) */
+	incl %r12d			/* increment counter */
+	subl $4, %esi /*Decrement the shift*/
+	cmp $7, %r12d  /*Check to see if r12d out of range*/
+	jb .LhexLoop
+	ja .Ldone /*Jump to end code*/
+.Ldone:
+	movq $0, (%rsi, %r12, 1) /*Add null terminator to end of sbuf*/
+	addq $8, %rsp
 	ret
 
 /* vim:ft=gas:
