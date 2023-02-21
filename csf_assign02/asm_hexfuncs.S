@@ -90,36 +90,47 @@ hex_format_byte_as_hex:
 .globl hex_format_offset
 
 hex_format_offset:
-	subq $8, %rsp
-	movq %rdi, %rax /*Moving offset into rax*/
-	movl $28, %esi /*Setting up index counter for offset in r11*/
+	subq $8, %rsp 	/*aligtn stack */
+	movq %rdi, %rax /*Moving offset into rax ? temp?*/
+	/*movl $28, %esi /*Setting up index counter for offset in r11*/
 	movq $0, %r13 /*Freeing up r13 to hold the char in hexVals*/
 	movq $0, %r12 /*Freeing up r12 to hold loop counter*/
 	movq $0, %r10 /*Temp val to to change offset*/
-	movq $0, %r14 /*temp val from the previous iteration will be stored here */
+	movq $7, %r14 /* max shift value that will be changed incrementally */
 	movq $hexVals, %rdx /*Moving hexVals pointer into rdx*/
 	jmp .LhexLoop
 .LhexLoop:
-	movq %rax, %r10    /*move offset value into temp value */
-	subq %r14, %r10	  	/*subtract last iterations temp from current temp */
+	/*movq %rax, %r10    /*move offset value into temp value */
+	subq %r10, %rax  	/*subtract last iterations temp from offset*/
+	movq %rax, %r10		/* move new offset into current temp */
+	movq $0, %r15        /*counter for shifting loop stored here */
 	jmp .LrightShift
-.LafterRight	
-	movq (%r10, %rax, 1), %r13 	/* use quotient as index in rdx to find first hex value, store to %r13 */
+.LafterRight:	
+	movq (%rdx, %r10, 1), %r13 	/* use quotient as index in rdx to find first hex value, store to %r13 */
 	movq %r13, (%rsi, %r12, 1) 	/*move %r13 to the %r12 (counter) index in buf (%rsi) */
 	jmp .LleftShift
 	/*shr $8, %r10 /*right shift offset by index*4 , getting index of hexvals to put in sbuf, then decrement index and run loop again */
 	/*shl $4, %r14 */
-.LafterLeft
-	movq %r10, %r14 	/* move current temp into "last iteration's" temp */
+.LafterLeft:
+	/* movq %r10, %r14 	/* move current temp into "last iteration's" temp */
 	incl %r12d			/* increment counter */
 	/*subl $4, %esi /*Decrement the shift*/
+	decl %r14d
 	cmp $7, %r12d  /*Check to see if r12d out of range*/
 	jb .LhexLoop
 	ja .Ldone /*Jump to end code*/
-.LrightShift
-
-.LleftShift
-
+.LrightShift:
+	shr $4, %r10		/* right shift r10 by 4 (divide by 16) */
+	incl %r15d			/*increment counter */
+	cmp %r14d, %r15d
+	jb .LrightShift
+	jae .LafterRight
+.LleftShift:
+	shl $4, %r10
+	incl %r15d
+	cmp %r14d, %r15d
+	jb .LleftShift
+	jae .LafterLeft
 .Ldone:
 	movq $0, (%rsi, %r12, 1) /*Add null terminator to end of sbuf*/
 	addq $8, %rsp
