@@ -96,21 +96,30 @@ hex_format_offset:
 	movq $0, %r13 /*Freeing up r13 to hold the char in hexVals*/
 	movq $0, %r12 /*Freeing up r12 to hold loop counter*/
 	movq $0, %r10 /*Temp val to to change offset*/
-	movq $0, %r14
+	movq $0, %r14 /*temp val from the previous iteration will be stored here */
 	movq $hexVals, %rdx /*Moving hexVals pointer into rdx*/
 	jmp .LhexLoop
 .LhexLoop:
-	movq %rax, %r10
-	shr $8, %r10 /*Left shift offset by index*4 , getting index of hexvals to put in sbuf, then decrement index and run loop again */
-	shl $4, %r14
-	subq %r14, %r10
+	movq %rax, %r10    /*move offset value into temp value */
+	subq %r14, %r10	  	/*subtract last iterations temp from current temp */
+	jmp .LrightShift
+.LafterRight	
 	movq (%r10, %rax, 1), %r13 	/* use quotient as index in rdx to find first hex value, store to %r13 */
 	movq %r13, (%rsi, %r12, 1) 	/*move %r13 to the %r12 (counter) index in buf (%rsi) */
+	jmp .LleftShift
+	/*shr $8, %r10 /*right shift offset by index*4 , getting index of hexvals to put in sbuf, then decrement index and run loop again */
+	/*shl $4, %r14 */
+.LafterLeft
+	movq %r10, %r14 	/* move current temp into "last iteration's" temp */
 	incl %r12d			/* increment counter */
-	subl $4, %esi /*Decrement the shift*/
+	/*subl $4, %esi /*Decrement the shift*/
 	cmp $7, %r12d  /*Check to see if r12d out of range*/
 	jb .LhexLoop
 	ja .Ldone /*Jump to end code*/
+.LrightShift
+
+.LleftShift
+
 .Ldone:
 	movq $0, (%rsi, %r12, 1) /*Add null terminator to end of sbuf*/
 	addq $8, %rsp
