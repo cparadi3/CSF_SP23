@@ -33,6 +33,7 @@ int main(void) {
     hex_write_string("\n");
     read = hex_read(data_buf);
   }
+  return 0;
   //print the "position" of the string in the input (should start at zero + go up by 16 per line)
     //hex_format_offset and hex_write_string should be called (and hex_to_printable)
   //for each 16 char's in the line, format as hex
