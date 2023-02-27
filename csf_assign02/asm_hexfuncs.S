@@ -101,17 +101,19 @@ hex_format_offset:
 	jmp .LhexLoop
 .LhexLoop:
 	/*movq %rax, %r10    /*move offset value into temp value */
-	subq %r10, %rax  	/*subtract last iterations temp from offset*/
+	subq %r10, %rax 	/*subtract last iterations temp from offset*/
 	movq %rax, %r10		/* move new offset into current temp */
 	movq $0, %r15        /*counter for shifting loop stored here */
-	cmp $6, %r12		/* check if r10 needs to be shifted at all (won't on last iteration) */
-	jbe .LrightShift
-	ja .LafterLeft
+	cmp $7, %r12		/* check if r10 needs to be shifted at all (won't on last iteration) */
+	jb .LrightShift
+	jae .LafterRight
 .LafterRight:	
-	movq (%rdx, %r10, 1), %r13 	/* use quotient as index in rdx to find first hex value, store to %r13 */
+	movq (%rdx, %r10, 1), %r13	/* use quotient as index in rdx to find first hex value, store to %r13 */
 	movq %r13, (%rsi, %r12, 1) 	/*move %r13 to the %r12 (counter) index in buf (%rsi) */
 	movq $0, %r15
-	jmp .LleftShift
+	cmp $7, %r12			/*skip shifts on last time through loop */
+	jb .LleftShift
+	jae .LafterLeft
 	/*shr $8, %r10 /*right shift offset by index*4 , getting index of hexvals to put in sbuf, then decrement index and run loop again */
 	/*shl $4, %r14 */
 .LafterLeft:
@@ -120,8 +122,8 @@ hex_format_offset:
 	/*subl $4, %esi /*Decrement the shift*/
 	decl %r14d
 	cmp $7, %r12d  /*Check to see if r12d out of range*/
-	jb .LhexLoop
-	jae .Ldone /*Jump to end code*/
+	jbe .LhexLoop
+	ja .Ldone /*Jump to end code*/
 .LrightShift:
 	shr $4, %r10		/* right shift r10 by 4 (divide by 16) */
 	incl %r15d			/*increment counter */
@@ -135,7 +137,7 @@ hex_format_offset:
 	jb .LleftShift
 	jae .LafterLeft
 .Ldone:
-	incl %r12d
+	/*incl %r12d */
 	movq $0, (%rsi, %r12, 1) /*Add null terminator to end of sbuf*/
 	addq $8, %rsp
 	ret
