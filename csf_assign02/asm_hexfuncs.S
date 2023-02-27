@@ -146,14 +146,31 @@ hex_format_offset:
 
 hex_read:
 	subq $8, %rsp
+	movq %rdi, %rsi
+	movq $0, %rdi
+	movq $16, %rdx
 	call read
+	addq $8, %rsp
 	ret
 
 
 .globl hex_write_string
 
 hex_write_string:
-
+	subq $8, %rsp
+	call strLen
+	cmp $16, %rax
+	jbe .LFinished
+	ja .L16Len
+.L16Len:
+	movq $16, %rax
+	jmp .LFinished
+.LFinished: 
+	movq %rdi, %rsi
+	movq $1, %rdi
+	movq %rax, %rdx
+	call write
+	addq $8, %rsp
 	ret
 /* vim:ft=gas:
  */
