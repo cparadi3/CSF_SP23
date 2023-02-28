@@ -5,7 +5,7 @@
 	.globl main
 main:
 	/* TODO: add your code here */
-
+	
 	ret
 
 /* vim:ft=gas:
