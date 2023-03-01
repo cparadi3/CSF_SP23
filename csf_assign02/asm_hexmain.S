@@ -3,6 +3,7 @@
 	.section .rodata
 	colon: .string ": "
 	space: .string " "
+	newLine: .string "\n"
 	tripleSpace: .string "   " /*Changed this to reflect what was in c_hexmain*/
 	.section .text
 
@@ -59,7 +60,8 @@ main:
 	/*    data_buf[read] = '\0'; */
 	movq -32(%rbp), %rdi
 	call hex_write_string
-	/*hex_write_string("\n");*/
+	movq $newLine, %rdi /*Printing new line character*/
+	call hex_write_string
 	movq -32(%rbp), %rdi 
 	call hex_read
 	movq %rax, %r12 /*Updating the read variable with next character sequence*/
