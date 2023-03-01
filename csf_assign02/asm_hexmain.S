@@ -16,20 +16,23 @@ main:
 	movq $0, %r12 /*Read variable*/
 	movq $0, %r13 /*Counter variable*/
 	movl $0, %r14d /*Storing for loop counter*/
-	leaq -32(%rbp), %rdi /*Moving the stack pointer that corresponsds to the area we want to store data_buf*/
-	/*movq %rax, %rdi */
+	leaq -32(%rbp), %rbx /*Moving the stack pointer that corresponsds to the area we want to store data_buf*/
+	leaq -48(%rbp), %r15 	/*r15 is sbuf */
+	movq %rbx, %rdi
+	/*leaq -48(%rbp), %r15 /* moving stack pointer to area corresponding to buf (r15) */
+	/* movq %rbx, %rdi		/* move data buf pointer to argument register */
 	call hex_read
 	movq %rax, %r12 /*Storing output of read call into r12*/
-	movq (%rsi), %rax  /*debug line delete later */
 	jmp .LWhileLoop
 .LWhileLoop: 
 	cmp $0, %r12
 	jbe .LEnd /*If no more data to read, end program*/
-	movq %r13, %rdi
-	leaq -48(%rbp), %rsi /*Storing sbuf*/
+	movq %r13, %rdi		/*counter is first argument in format offset */
+	/*leaq -48(%rbp), %rsi /*Storing sbuf*/
+	movq %r15, %rsi		/*move sbuf into rsi */
 	/*movq %rax, %rsi */
 	call hex_format_offset
-	movq %rsi, %rdi 		/* move pointer to sbuf back to rdi*/
+	movq %r15, %rdi 		/* move pointer to sbuf back to rdi*/
 	call hex_write_string
 	movq $colon, %rdi
 	call hex_write_string
@@ -42,12 +45,17 @@ main:
 	jb .LIfStatement 
 	jae .LElse
 .LIfStatement:
-	leaq -32(%rbp), %rax /*Setting up call for hex_format_byte_as_hex (rdi is data_buf[i])*/
-	leaq -48(%rbp), %rsi /*Setting up call for hex_format_byte_as_hex (rsi is buf)*/
-	addq %r14, %rax 	/* increment index of data_buf by for loop counter*/
-	movq (%rax), %rdi 	/* dereference pointer to data_buf[i] */
+	/*leaq -32(%rbp), %rax /*Setting up call for hex_format_byte_as_hex (rdi is data_buf[i])*/
+	/*leaq -48(%rbp), %rsi /*Setting up call for hex_format_byte_as_hex (rsi is buf)*/
+	/*movq %rbx, %rax*/
+	/*addq %r14, %rax 	/* increment index of data_buf by for loop counter*/
+	/*movq (%rax), %rdi 	/* dereference pointer to data_buf[i] */
+	movq $0, %rdi
+	movb (%rbx, %r14, 1), %dil
+	movq %r15, %rsi 	/*move sbuf into rsi */
 	call hex_format_byte_as_hex
 	/*leaq -48(%rbp), %rdi /*Setting up call for hex_write_string*/
+	movq %r15, %rdi 	/* move sbuf into rdi */
 	call hex_write_string
 	movq $space, %rdi
 	call hex_write_string
