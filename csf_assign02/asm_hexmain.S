@@ -1,5 +1,5 @@
 /* Hexdump main function, assembly language version */
-#include "asm_hexfuncs.S"
+/*#include "asm_hexfuncs.S"*/
 	.section .rodata
 	colon: .string ": "
 	space: .string " "
