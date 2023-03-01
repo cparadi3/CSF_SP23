@@ -31,7 +31,7 @@ main:
 .LForLoop: /*Compares read variable to i*/
 	cmp $16, %r14d /*i < 16*/
 	je .LEndOfWhile
-	cmp %r12d, %r14d /*Comparison for if/else statement*/
+	cmp %r12d, %r14d /*Comparison for if/else statement !!! Might need to change how we use these registers*/
 	jb .LIfStatement 
 	jae .LElse
 .LIfStatement:
