@@ -17,17 +17,21 @@ main:
 	movq $0, %r13 /*Counter variable*/
 	movl $0, %r14d /*Storing for loop counter*/
 	leaq -32(%rbp), %rdi /*Moving the stack pointer that corresponsds to the area we want to store data_buf*/
+	/*movq %rax, %rdi */
 	call hex_read
 	movq %rax, %r12 /*Storing output of read call into r12*/
+	movq (%rsi), %rax  /*debug line delete later */
 	jmp .LWhileLoop
 .LWhileLoop: 
 	cmp $0, %r12
-	jae .LEnd /*If no more data to read, end program*/
+	jbe .LEnd /*If no more data to read, end program*/
 	movq %r13, %rdi
-	movq -48(%rbp), %rsi /*Storing sbuf*/
-	call hex_format_offset 
+	leaq -48(%rbp), %rsi /*Storing sbuf*/
+	/*movq %rax, %rsi */
+	call hex_format_offset
+	movq %rsi, %rdi 		/* move pointer to sbuf back to rdi*/
 	call hex_write_string
-	movq $colon, %rsi
+	movq $colon, %rdi
 	call hex_write_string
 	movl $0, %r14d
 	jmp .LForLoop
@@ -38,10 +42,12 @@ main:
 	jb .LIfStatement 
 	jae .LElse
 .LIfStatement:
-	movq -32(%rbp), %rdi /*Setting up call for hex_format_byte_as_hex*/
-	movq -48(%rbp), %rsi /*Setting up call for hex_format_byte_as_hex*/
+	leaq -32(%rbp), %rax /*Setting up call for hex_format_byte_as_hex (rdi is data_buf[i])*/
+	leaq -48(%rbp), %rsi /*Setting up call for hex_format_byte_as_hex (rsi is buf)*/
+	addq %r14, %rax 	/* increment index of data_buf by for loop counter*/
+	movq (%rax), %rdi 	/* dereference pointer to data_buf[i] */
 	call hex_format_byte_as_hex
-	movq -48(%rbp), %rdi /*Setting up call for hex_write_string*/
+	/*leaq -48(%rbp), %rdi /*Setting up call for hex_write_string*/
 	call hex_write_string
 	movq $space, %rdi
 	call hex_write_string
