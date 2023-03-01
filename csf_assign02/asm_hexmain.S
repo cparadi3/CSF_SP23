@@ -28,6 +28,8 @@ main:
 	call hex_write_string
 	movq $colon, %rsi
 	call hex_write_string
+	movl $0, %r14d
+	jmp .LForLoop
 .LForLoop: /*Compares read variable to i*/
 	cmp $16, %r14d /*i < 16*/
 	je .LEndOfWhile
@@ -43,6 +45,7 @@ main:
 	movq $space, %rdi
 	call hex_write_string
 	/*Need to figure out this last part of the if statement*/
+	/*data_buf[i] = hex_to_printable(data_buf[i]) */
 	incl %r14d
 	jmp .LForLoop
 .LElse: 
