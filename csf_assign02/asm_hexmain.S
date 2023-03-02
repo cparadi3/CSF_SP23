@@ -4,6 +4,7 @@
 	colon: .string ": "
 	space: .string " "
 	newLine: .string "\n"
+	nullTerm: .string "0"
 	tripleSpace: .string "   " /*Changed this to reflect what was in c_hexmain*/
 	.section .text
 
@@ -61,6 +62,11 @@ main:
 	call hex_write_string
 	/*Need to figure out this last part of the if statement*/
 	/*data_buf[i] = hex_to_printable(data_buf[i]) */
+	movq $0, %rdi
+	movb (%rbx, %r14, 1), %dil
+	call hex_to_printable
+	movb %al, (%rbx, %r14, 1)
+	/*New code for c on 63*/
 	incl %r14d
 	jmp .LForLoop
 .LElse: 
@@ -72,11 +78,14 @@ main:
 	movq $space, %rdi
 	call hex_write_string
 	/*    data_buf[read] = '\0'; */
-	movq -32(%rbp), %rdi
-	call hex_write_string
+	movq $nullTerm, %rdi
+	movb %dil, (%rbx, %r12, 1) /*Causes a ( to be put at index*/
+	/*Potential Solution*/
+	movq %rbx, %rdi
+	call hex_write_string 
 	movq $newLine, %rdi /*Printing new line character*/
-	call hex_write_string
-	movq -32(%rbp), %rdi 
+	call hex_write_string 
+	movq %rbx, %rdi 
 	call hex_read
 	movq %rax, %r12 /*Updating the read variable with next character sequence*/
 	jmp .LWhileLoop
