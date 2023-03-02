@@ -78,7 +78,7 @@ main:
 	movq $space, %rdi
 	call hex_write_string
 	/*    data_buf[read] = '\0'; */
-	movq $nullTerm, %rdi
+	movq $0, %rdi
 	movb %dil, (%rbx, %r12, 1) /*Causes a ( to be put at index*/
 	/*Potential Solution*/
 	movq %rbx, %rdi
