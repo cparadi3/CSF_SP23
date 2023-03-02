@@ -44,7 +44,7 @@ strLen:
 	.globl hex_to_printable
 hex_to_printable: 
 	subq $8, %rsp		/* adjust stack pointer */
-	cmp $127, %rdi		/* compare byteval to 127 */
+	cmp $126, %rdi		/* compare byteval to 127 */
 	ja .Lperiod			/* if byteval is above 127, jump to func that sets byteval to default*/
 	cmp $32, %rdi		/* compare byteval to 32*/
 	jb .Lperiod			/* if byteval is below 32, jump to func that sets byteval to default*/
@@ -93,8 +93,8 @@ hex_format_offset:
 	subq $8, %rsp 	/*aligtn stack */
 	movq %rdi, %rax /*Moving offset into rax ? temp?*/
 	/*movl $28, %esi /*Setting up index counter for offset in r11*/
-	movq $0, %r8 /*Freeing up r13 to hold the char in hexVals*/
-	movq $0, %r9 /*Freeing up r12 to hold loop counter*/
+	movq $0, %r8 /*Freeing up r8 to hold the char in hexVals*/
+	movq $0, %r9 /*Freeing up r9 to hold loop counter*/
 	movq $0, %r10 /*Temp val to to change offset*/
 	movq $7, %r11 /* max shift value that will be changed incrementally */
 	movq $hexVals, %rdx /*Moving hexVals pointer into rdx*/
@@ -108,70 +108,65 @@ hex_format_offset:
 	jb .LrightShift
 	jae .LafterRight
 .LafterRight:	
-	movq (%rdx, %r10, 1), %r8	/* use quotient as index in rdx to find first hex value, store to %r13 */
-	movq %r8, (%rsi, %r9, 1) 	/*move %r13 to the %r12 (counter) index in buf (%rsi) */
+	movq (%rdx, %r10, 1), %r8	/* use quotient as index in rdx to find first hex value, store to %r18 */
+	movq %r8, (%rsi, %r9, 1) 	/*move %r8 to the %r9 (counter) index in buf (%rsi) */
 	movq $0, %rcx
 	cmp $7, %r9			/*skip shifts on last time through loop */
 	jb .LleftShift
 	jae .LafterLeft
-	/*shr $8, %r10 /*right shift offset by index*4 , getting index of hexvals to put in sbuf, then decrement index and run loop again */
-	/*shl $4, %r14 */
 .LafterLeft:
-	/* movq %r10, %r14 	/* move current temp into "last iteration's" temp */
 	incl %r9d			/* increment counter */
-	/*subl $4, %esi /*Decrement the shift*/
-	decl %r11d
+	decl %r11d			/* decrement shift counter */
 	cmp $7, %r9d  /*Check to see if r12d out of range*/
 	jbe .LhexLoop
 	ja .Ldone /*Jump to end code*/
 .LrightShift:
 	shr $4, %r10		/* right shift r10 by 4 (divide by 16) */
 	incl %ecx			/*increment counter */
-	cmp %r11d, %ecx
+	cmp %r11d, %ecx		/* loop conditional */
 	jb .LrightShift
 	jae .LafterRight
 .LleftShift:
-	shl $4, %r10
-	incl %ecx
-	cmp %r11d, %ecx
+	shl $4, %r10	/* left shift r10 by 4 (multiply by 16) */
+	incl %ecx		/* increment counter */
+	cmp %r11d, %ecx	/* loop conditional */
 	jb .LleftShift
 	jae .LafterLeft
 .Ldone:
-	/*incl %r12d */
 	movq $0, (%rsi, %r9, 1) /*Add null terminator to end of sbuf*/
-	addq $8, %rsp
+	addq $8, %rsp		/* realign stack */
 	ret
 
 .globl hex_read
 
 hex_read:
-	subq $8, %rsp
-	movq %rdi, %rsi
+	subq $8, %rsp		/*align stack */
+	movq %rdi, %rsi		/* get arguments in the correct registers for read function */
 	movq $0, %rdi
 	movq $16, %rdx
 	call read
-	addq $8, %rsp
+	addq $8, %rsp	/* align stack */
 	ret
 
 
 .globl hex_write_string
 
 hex_write_string:
-	subq $8, %rsp
-	movq %rdi, %r9
+	subq $8, %rsp		/* align stack */
+	movq %rdi, %r9		/* move rdi into temp value */
 	call strLen
-	cmp $16, %rax
+	cmp $16, %rax		/* check if string is greater than 16 */
 	jbe .LFinished
 	ja .L16Len
 .L16Len:
-	movq $16, %rax
+	movq $16, %rax		/* if greater than 16, only write the first 16 */
 	jmp .LFinished
-.LFinished: 
-	movq %r9, %rsi
-	movq $1, %rdi
-	movq %rax, %rdx
+.LFinished: 		/*otherwise, write strlen number of chars */
+	movq %r9, %rsi	/* move temp into rsi */
+	movq $1, %rdi	/* move one into rdi (first argument) */
+	movq %rax, %rdx	/* move strlen value into rdx */
 	call write
-	addq $8, %rsp
+	addq $8, %rsp	/* align stack */
 	ret
 /* vim:ft=gas:
  */

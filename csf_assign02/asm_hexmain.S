@@ -31,68 +31,57 @@ main:
 	movq %r13, %rdi		/*counter is first argument in format offset */
 	/*leaq -48(%rbp), %rsi /*Storing sbuf*/
 	movq %r15, %rsi		/*move sbuf into rsi */
-	/*movq %rax, %rsi */
 	call hex_format_offset
 	movq %r15, %rdi 		/* move pointer to sbuf back to rdi*/
 	call hex_write_string
-	movq $colon, %rdi
+	movq $colon, %rdi		/*move ": " into rdi */
 	call hex_write_string
-	movl $0, %r14d
-	jmp .LForLoop
+	movl $0, %r14d		/*initialize for loop counter to zero */
+	jmp .LForLoop	
 .LForLoop: /*Compares read variable to i*/
 	cmp $16, %r14d /*i < 16*/
 	je .LEndOfWhile
-	cmp %r12d, %r14d /*Comparison for if/else statement !!! Might need to change how we use these registers*/
+	cmp %r12d, %r14d /*Comparison for if/else statement */
 	jb .LIfStatement 
 	jae .LElse
 .LIfStatement:
-	/*leaq -32(%rbp), %rax /*Setting up call for hex_format_byte_as_hex (rdi is data_buf[i])*/
-	/*leaq -48(%rbp), %rsi /*Setting up call for hex_format_byte_as_hex (rsi is buf)*/
-	/*movq %rbx, %rax*/
-	/*addq %r14, %rax 	/* increment index of data_buf by for loop counter*/
-	/*movq (%rax), %rdi 	/* dereference pointer to data_buf[i] */
-	movq $0, %rdi
-	movb (%rbx, %r14, 1), %dil
+	movq $0, %rdi		/*clear rdi so subregister %dil isn't corrupted */
+	movb (%rbx, %r14, 1), %dil		/*get char value from rbx (data_buf) and stor it into rdi subregister */
 	movq %r15, %rsi 	/*move sbuf into rsi */
 	call hex_format_byte_as_hex
-	/*leaq -48(%rbp), %rdi /*Setting up call for hex_write_string*/
 	movq %r15, %rdi 	/* move sbuf into rdi */
 	call hex_write_string
-	movq $space, %rdi
+	movq $space, %rdi	/* move space string into rdi */
 	call hex_write_string
-	/*Need to figure out this last part of the if statement*/
-	/*data_buf[i] = hex_to_printable(data_buf[i]) */
-	movq $0, %rdi
-	movb (%rbx, %r14, 1), %dil
+	movq $0, %rdi		/*clear rdi so subregister %dil isn't corrupted */
+	movb (%rbx, %r14, 1), %dil		/*get char value from rbx (data_buf) and stor it into rdi subregister */
 	call hex_to_printable
-	movb %al, (%rbx, %r14, 1)
-	/*New code for c on 63*/
-	incl %r14d
+	movb %al, (%rbx, %r14, 1) 	/*change character in data_buf to printable */
+	incl %r14d			/*increment for loop counter (i) */
+	incl %r13d			/*increment "counter" variable (total number of chars read) */
 	jmp .LForLoop
 .LElse: 
 	movq $tripleSpace, %rdi /*Calling hex_write_String*/
-	call hex_write_string
-	incl %r14d
+	call hex_write_string	/*print three spaces for every empty spot until 16 */
+	incl %r14d		/*increment for loop counter (i) */
 	jmp .LForLoop
 .LEndOfWhile: 
-	movq $space, %rdi
+	movq $space, %rdi		/*print one space */
 	call hex_write_string
-	/*    data_buf[read] = '\0'; */
-	movq $0, %rdi
-	movb %dil, (%rbx, %r12, 1) /*Causes a ( to be put at index*/
-	/*Potential Solution*/
-	movq %rbx, %rdi
+	movq $0, %rdi		/*clear rdi so subregister %dil isn't corrupted */
+	movb %dil, (%rbx, %r12, 1) 	/*get char value from rbx (data_buf) and stor it into rdi subregister */
+	movq %rbx, %rdi			/* move data_buf into rdi */
 	call hex_write_string 
 	movq $newLine, %rdi /*Printing new line character*/
 	call hex_write_string 
-	movq %rbx, %rdi 
+	movq %rbx, %rdi 	/* read next 16 chars */
 	call hex_read
 	movq %rax, %r12 /*Updating the read variable with next character sequence*/
 	jmp .LWhileLoop
 .LEnd:
-	movq $0, %rax 
-	addq $48, %rsp /*Reseting the stack*/
-	popq %rbp /*Reseting the stack*/
+	movq $0, %rax 	/* return 0 */
+	addq $48, %rsp /*Resetting the stack*/
+	popq %rbp /*Resetting the stack*/
 	ret
 
 /* vim:ft=gas:
