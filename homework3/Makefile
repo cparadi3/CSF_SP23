@@ -2,19 +2,25 @@
 # Makefile for CSF Assignment 3
 #
 
-C_SRCS = c_hexfuncs.c c_hexmain.c hextests.c tctest.c
-CFLAGS = -g -Og -no-pie -Wall -std=gnu11
+CXX = g++
+CXXFLAGS = -g -Og -no-pie -Wall -std=gnu11 -Wextra -Wpedantic
 
 LDFLAGS = -no-pie
 
 %.o : %.c
-	gcc $(CFLAGS) -c $<
+	gcc $(CXXFLAGS) -c $<
 
 all : csim
 
-csim : cacheMain.o
-	gcc -o $@ $(LDFLAGS) cacheMain.o
+csim : cacheMain.o cache.o block.o
+	$(CXX) $(CXXFLAGS) -o csim cacheMain.o cache.o block.o
 
+cacheMain.o : cacheMain.cpp cache.h
+	$(CXX) -c cacheMain.cpp
+cache.o : cache.cpp cache.h block.h
+	$(CXX) -c cache.cpp cache.h block.h
+block.o : block.cpp block.h
+	$(CXX) -c block.cpp block.h
 # Use this target to create a zipfile that you can submit to Gradescope
 .PHONY: solution.zip
 solution.zip :
