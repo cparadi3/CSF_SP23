@@ -5,7 +5,7 @@
 
 class Cache {
     private:
-    std::vector<Set> setVector;
+    std::vector<Set> *setVector;
     int numSets;
     int numBlocks;
     int numBytes;
