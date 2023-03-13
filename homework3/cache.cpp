@@ -10,6 +10,11 @@ Cache::Cache(int numSets, int numBlocks, int numBytes) {
     this->numBlocks = numBlocks;
     this->numBytes = numBytes;
     this->setVector = new std::vector<Set>;
+    int load_hits = 0;
+    int load_misses = 0;
+    int store_hits = 0;
+    int store_misses = 0;
+    int total_cycles = 0;
     for (int i = 0; i < numSets; i++) {
         Set temp = Set();
         setVector->push_back(temp);
