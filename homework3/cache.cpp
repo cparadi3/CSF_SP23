@@ -1,10 +1,12 @@
 #include "cache.h"
 #include <vector>
+#include <iostream>
 #include "set.h"
 #include "block.h"
 
 Cache::Cache(int numSets, int numBlocks, int numBytes) {
     this->numSets = numSets;
+    //std::cout << numSets;
     this->numBlocks = numBlocks;
     this->numBytes = numBytes;
     this->setVector = new std::vector<Set>;
@@ -14,6 +16,7 @@ Cache::Cache(int numSets, int numBlocks, int numBytes) {
         for (int j = 0; j < numBlocks; j++) {
             Block bloq = Block();
             temp.add(bloq);
+            //std::cout << bloq.getData() << " " << i << " " << j << '\n' ;
         }
     }
 }
