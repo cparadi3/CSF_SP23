@@ -10,6 +10,7 @@ Block::Block() {
 }
 Block::~Block() {
     //TODO: implement
+    //Don't think we need anything, nothing to free
 }
 
 void Block::changeValue(std::string input) {
@@ -21,7 +22,13 @@ std::string Block::getData() {
 }
 
 bool Block::operator == (Block compareTo) {
+    /*
     if (compareTo.getData() == this->getData()) {
+        return true;
+    }
+    */
+   //pretty sure need to use compare for strings
+    if(this->getData().compare(compareTo.getData()) == 0) {
         return true;
     }
       return false; 
