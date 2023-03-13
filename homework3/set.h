@@ -4,9 +4,10 @@
 #include "block.h"
 
 class Set {
-    private:
-    std::vector<Block> *blockVector;
+    //private:
     public:
+    std::vector<Block> *blockVector;
+    //public:
     Set();
     ~Set();
     //void changeValue(Block value);

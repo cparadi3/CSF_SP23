@@ -4,9 +4,11 @@
 Block::Block() {
     //todo : implement
     //byteVector.push_back() = "abcdef12";
-    for (int i = 0; i < 8; i++) {
+    /*for (int i = 0; i < 8; i++) {
         data[i] = '0';
     }
+    */
+    this->data = "00000000";
 }
 Block::~Block() {
     //TODO: implement

@@ -5,12 +5,13 @@
 #include "block.h"
 
 class Cache {
-    private:
+    //private:
+    public:
     std::vector<Set> *setVector;
     int numSets;
     int numBlocks;
     int numBytes;
-    public:
+    //public:
     Cache(int numSets, int numBlocks, int numBytes);
     ~Cache();
 };

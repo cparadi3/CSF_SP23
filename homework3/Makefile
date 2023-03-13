@@ -15,8 +15,8 @@ all : csim
 csim : cacheMain.o cache.o block.o set.o
 	$(CXX) $(CXXFLAGS) -o csim cacheMain.o cache.o block.o set.o
 
-cacheMain.o : cacheMain.cpp cache.h
-	$(CXX) -c cacheMain.cpp
+cacheMain.o : cacheMain.cpp cache.h block.h set.h 
+	$(CXX) -c cacheMain.cpp 
 cache.o : cache.cpp cache.h set.h block.h
 	$(CXX) -c cache.cpp cache.h set.h block.h
 block.o : block.cpp block.h

@@ -8,7 +8,7 @@ Set::Set() {
 }
 
 Set::~Set() {
-    delete(blockVector);
+    //delete(blockVector);
 }
 
 void Set::add(Block value) {
