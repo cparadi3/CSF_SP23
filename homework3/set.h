@@ -4,6 +4,13 @@
 #include "block.h"
 
 class Set {
-    std::vector<Block> blockVector;
+    private:
+    std::vector<Block> *blockVector;
+    public:
+    Set();
+    ~Set();
+    //void changeValue(Block value);
+    void add(Block value);
+    void replace(Block value);
 };
 #endif

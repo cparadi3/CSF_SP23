@@ -2,6 +2,7 @@
 #define cache
 #include <vector>
 #include "set.h"
+#include "block.h"
 
 class Cache {
     private:
@@ -10,7 +11,7 @@ class Cache {
     int numBlocks;
     int numBytes;
     public:
-    Cache();
     Cache(int numSets, int numBlocks, int numBytes);
+    ~Cache();
 };
 #endif

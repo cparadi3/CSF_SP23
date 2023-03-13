@@ -5,10 +5,13 @@
 
 class Block {
     private:
-        std::vector<char[8]> byteVector; 
+        std::string data;
     public:
         Block();
         ~Block();
-        void fillAddress(char *location[8], std::string memAddress);
+        //void fillAddress(char location[8], std::string memAddress);
+        void changeValue(std::string input);
+        std::string getData();
+        bool operator == (Block compareTo);
 };
 #endif
