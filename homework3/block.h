@@ -8,6 +8,7 @@ class Block {
         std::string data;
     public:
         Block();
+        Block(std::string input);
         ~Block();
         //void fillAddress(char location[8], std::string memAddress);
         void changeValue(std::string input);

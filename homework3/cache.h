@@ -21,5 +21,6 @@ class Cache {
     Cache(int numSets, int numBlocks, int numBytes);
     ~Cache();
     void attempt(std::string lors, std::string memLoc);
+    void print();
 };
 #endif

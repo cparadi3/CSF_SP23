@@ -19,13 +19,14 @@ int main(int argc, char *argv[]) {
       std::string garbage;
       inf >> garbage;
       std::cout << lors << " " << memLoc << '\n';
-      //myCache.do(lors, memLoc); 
+      myCache->attempt(lors, memLoc); 
     }
     //std::string test
-     Set temp = myCache->setVector->at(0);
-     Block tempy = temp.blockVector->at(0);
-    std::string test = tempy.getData();
-    std::cout << test;
+     //Set temp = myCache->setVector->at(0);
+     //Block tempy = temp.blockVector->at(0);
+    //std::string test = tempy.getData();
+    //std::cout << test;
+    myCache->print();
     delete myCache;
     return 0;
     //int argc, char *argv[]

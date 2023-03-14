@@ -10,6 +10,11 @@ Block::Block() {
     */
     this->data = "00000000";
 }
+
+//constructor with string value argument
+Block::Block(std::string input) {
+    this->data = input;
+}
 Block::~Block() {
     //TODO: implement
     //Don't think we need anything, nothing to free
