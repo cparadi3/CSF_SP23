@@ -12,7 +12,7 @@ class Set {
     ~Set();
     //void changeValue(Block value);
     void add(Block value);
-    void replace(Block value);
+    void replace(unsigned index, Block value);
     bool get(unsigned value);
 };
 #endif

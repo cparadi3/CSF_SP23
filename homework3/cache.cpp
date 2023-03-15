@@ -44,10 +44,13 @@ void Cache::attempt(std::string lors, unsigned memLoc) {
     unsigned index = getIndex(memLoc, offsetBits, indexBits);
     unsigned offset = getOffset(memLoc, offsetBits);
     unsigned tag = getTag(memLoc, offsetBits, indexBits);
-    if (find(index, offset, tag)) {
-        hit(tag, index, offset, lors, "write-through", "no-write-allocate");
+    bool test = find(index, offset, tag); //delete later
+    std::string write = "write-through" ; //DELETE LATER
+    std::string allocate = "no-write-allocate"; //delete later
+    if (test) {
+        hit(tag, index, offset, lors, write, allocate);
     } else {
-        miss(tag, index, offset, lors, "write-through", "no-write-allocate");
+        miss(tag, index, offset, lors, write, allocate);
     }
     
     //perform appropriate operation depending on hit or miss & store or load
@@ -71,6 +74,9 @@ unsigned Cache::getIndex(unsigned memLoc, unsigned offsetBits, unsigned indexBit
     unsigned indexNum = memLoc >> offsetBits;
     //unsigned indexBits = log2(numSets);
     //shift back and forth to isolate the bits 
+    if (indexBits == 0) {
+        return 0; // if there's only one set the index will always be zero
+    }
     indexNum = indexNum << (32 - indexBits);
     indexNum = indexNum >> (32 - indexBits);
     return indexNum;
@@ -80,6 +86,9 @@ unsigned Cache::getIndex(unsigned memLoc, unsigned offsetBits, unsigned indexBit
 unsigned Cache::getOffset(unsigned memLoc, unsigned offsetBits) {
     //int numbits = log2(numBlocks);
     //TODO : add error case for wrong num of blocks (also sets and byte)
+    if (offsetBits == 0) {
+        return 0; //no offset bits, offset will always be zero (direct mapped i think)
+    }
     unsigned offsetNum = memLoc >> (32 - offsetBits);
     offsetNum = memLoc << (32 - offsetBits);
     return offsetNum; 
@@ -129,7 +138,7 @@ void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string comm
             else {
                 //write-through no-write-allocate
                 Block tempBlock = Block(tag);
-                setVector->at(index).replace(tempBlock);
+                setVector->at(index).replace(index, tempBlock);
                 load_misses += 1;
                 total_cycles += 100;
             }
@@ -181,7 +190,7 @@ void Cache::print() {
     tag.erase(0,1);
     //"hit" variable
     bool hit = false;
-    /* for (int i = 0; i < memLoc.length(); i++) {
+      for (int i = 0; i < memLoc.length(); i++) {
         if (i > 1) {
             tag[i] = memLoc[i];
         }
