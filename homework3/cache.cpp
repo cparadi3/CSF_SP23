@@ -46,6 +46,8 @@ void Cache::attempt(std::string lors, unsigned memLoc) {
     unsigned tag = getTag(memLoc, offsetBits, indexBits);
     if (find(index, offset, tag)) {
         hit();
+    } else {
+        miss();
     }
     for (std::vector<Set>::iterator it = setVector->begin(); it != setVector->end(); it++) {
         if (it->get(tag)) {
