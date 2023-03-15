@@ -45,46 +45,19 @@ void Cache::attempt(std::string lors, unsigned memLoc) {
     unsigned offset = getOffset(memLoc, offsetBits);
     unsigned tag = getTag(memLoc, offsetBits, indexBits);
     if (find(index, offset, tag)) {
-        hit();
+        hit(tag, index, offset, lors, "write-through", "no-write-allocate");
     } else {
-        miss();
+        miss(tag, index, offset, lors, "write-through", "no-write-allocate");
     }
-    for (std::vector<Set>::iterator it = setVector->begin(); it != setVector->end(); it++) {
-        if (it->get(tag)) {
-            hit = true;
-        }
-    }
+    
     //perform appropriate operation depending on hit or miss & store or load
-   if (lors.compare("s") == 0) {
-        //for now, cache is write-through and no-write-allocate
-        if (hit) {
-            total_cycles += 101;
-            store_hits += 1;
-        } else {
-            //don't modify the cache (for no-write allocate)
-            store_misses += 1;
-            total_cycles += 100;
-        }
-   } else if (lors.compare("l") == 0) {
-        if (hit) {
-            load_hits += 1;
-            total_cycles += 1;
-        } else {
-            load_misses += 1;
-            setVector->erase(setVector->begin());
-            Set temp = Set();
-            temp.add(tag);
-            setVector->push_back(temp);
-            total_cycles += 100;
-        }
-   } else {
+   
     //TODO: change this to a stderr message
-    std::cout << "error. ivalid input (lors): " << '\n';
-   }
+    
 }
 
 //get the tag from unsigned memory location
-bool find(unsigned index, unsigned offset, unsigned tag) {
+bool Cache::find(unsigned index, unsigned offset, unsigned tag) {
      for (std::vector<Set>::iterator it = setVector->begin(); it != setVector->end(); it++) {
         if (it->get(tag)) {
             return true;
@@ -94,37 +67,106 @@ bool find(unsigned index, unsigned offset, unsigned tag) {
 }
 
 //get the index from the unsigned memory location
-unsigned getIndex(unsigned memLoc, unsigned offsetBits, unsigned indexBits) {
+unsigned Cache::getIndex(unsigned memLoc, unsigned offsetBits, unsigned indexBits) {
     unsigned indexNum = memLoc >> offsetBits;
     //unsigned indexBits = log2(numSets);
     //shift back and forth to isolate the bits 
     indexNum = indexNum << (32 - indexBits);
     indexNum = indexNum >> (32 - indexBits);
+    return indexNum;
 }
 
 //get the offset from unsigned memory location
-unsigned getOffset(unsigned memLoc, unsigned offsetBits) {
+unsigned Cache::getOffset(unsigned memLoc, unsigned offsetBits) {
     //int numbits = log2(numBlocks);
     //TODO : add error case for wrong num of blocks (also sets and byte)
     unsigned offsetNum = memLoc >> (32 - offsetBits);
-    offsetNum = offsetNum = memLoc << (32 - offsetBits);
+    offsetNum = memLoc << (32 - offsetBits);
     return offsetNum; 
 }
 
 //get the tag from unsigned memory location
- unsigned getTag(unsigned memLoc, unsigned offsetBits, unsigned indexBits) {
+ unsigned Cache::getTag(unsigned memLoc, unsigned offsetBits, unsigned indexBits) {
     unsigned tagNum = memLoc >> (indexBits + offsetBits);
+    return tagNum;
  } 
 
 // perform the appropriate operation on a hit
-void hit() {
+void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate) {
+    if(command.compare("l") == 0) {
+        load_hits += 1;
+        total_cycles += 1;
+    }
+    else {
+        if(writeThrough.compare("write-through") == 0) {
+            if(writeAllocate.compare("write-allocate") == 0) {}
+            else {
+            store_hits += 1;
+            total_cycles += 100;
+            }
 
+        }
+        else {
+            //write_back write-allocate
+            if(writeAllocate.compare("write-allocate") == 0) {}
+            //write-back no-write-allocate
+            else {
+            store_hits += 1;
+            total_cycles += 100;
+            }
+            //Mark block dirty
+        }
+    }
 }
 
 // perform the appropriate operation on a miss
-void miss() {
-
+void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate) {
+     if(command.compare("l") == 0) {
+        if(writeThrough.compare("write-through") == 0) {
+            if(writeAllocate.compare("write-allocate") == 0) {
+                //write-through write-allocate
+            }
+            else {
+                //write-through no-write-allocate
+                Block tempBlock = Block(tag);
+                setVector->at(index).replace(tempBlock);
+                load_misses += 1;
+                total_cycles += 100;
+            }
+        }
+        else {
+            //write-back
+            if(writeAllocate.compare("write-allocate") == 0) {
+                //write-back write-allocate
+            }
+            else {
+                //write-back no-write-allocate
+            }
+        }
+    }
+    else {
+          if(writeThrough.compare("write-through") == 0) {
+            if(writeAllocate.compare("write-allocate") == 0) {
+                //write-through write-allocate
+            }
+            else {
+                //write-through no-write-allocate
+                store_misses +=1;
+                total_cycles += 100;
+            }
+        }
+        else {
+            //write-back
+            if(writeAllocate.compare("write-allocate") == 0) {
+                //write-back write-allocate
+            }
+            else {
+                //write-back no-write-allocate
+            }
+        }
+    }
 }
+
 void Cache::print() {
     std::cout << "load hits: " << load_hits << '\n';
     std::cout << "load misses: " << load_misses << '\n';

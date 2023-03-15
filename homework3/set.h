@@ -5,8 +5,9 @@
 
 class Set {
     private:
-    std::vector<Block> *blockVector;
+    //std::vector<Block> *blockVector;
     public:
+    std::vector<Block> *blockVector;
     Set();
     ~Set();
     //void changeValue(Block value);

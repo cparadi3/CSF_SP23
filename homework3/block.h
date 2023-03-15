@@ -7,13 +7,15 @@ class Block {
     private:
         //std::string data;
         unsigned tag;
+        bool dirty;
     public:
         Block();
-        Block(std::string input);
+        Block(unsigned input);
         ~Block();
         //void fillAddress(char location[8], std::string memAddress);
-        void changeValue(std::string input);
+        void changeValue(unsigned input);
         unsigned getData();
-        //bool operator == (Block compareTo);
+
+        bool operator == (Block compareTo);
 };
 #endif

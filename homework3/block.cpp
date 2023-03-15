@@ -8,12 +8,13 @@ Block::Block() {
         data[i] = '0';
     }
     */
-    this->data = 0;
+    this->tag = 0;
 }
 
 //constructor with string value argument
 Block::Block(unsigned input) {
-    this->data = input;
+    this->tag = input;
+    this->dirty = false;
 }
 Block::~Block() {
     //TODO: implement
@@ -21,26 +22,17 @@ Block::~Block() {
 }
 
 void Block::changeValue(unsigned input) {
-    data = input;
+    tag = input;
 }
 
-unsigned getData() {
-    return data;
+unsigned Block::getData() {
+    return tag;
 }
 
-/*
+
 bool Block::operator == (Block compareTo) {
-    /*
     if (compareTo.getData() == this->getData()) {
         return true;
     }
-    
-   //pretty sure need to use compare for strings
-    if(this->getData().compare(compareTo.getData()) == 0) {
-        return true;
-    }
-      return false; 
-    
-    
+    return false; 
 }
-*/
