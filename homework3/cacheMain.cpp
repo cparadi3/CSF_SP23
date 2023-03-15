@@ -14,11 +14,18 @@ int main(int argc, char *argv[]) {
     while (inf) {
       std::string lors;
       inf >> lors;
-      std::string memLoc;
-      inf >> memLoc;
+      if (lors.compare("") == 0) {
+        break;
+      } 
+      std::string temp;
+      //TODO: figure out how to get the 0x out of the string (or if you have to)
+      unsigned memLoc;
+      //inf >> temp;
+      //temp.erase(0,1);
+      inf >> std::hex >> memLoc;
       std::string garbage;
       inf >> garbage;
-      std::cout << lors << " " << memLoc << '\n';
+      //std::cout << lors << " " << memLoc << '\n';
       myCache->attempt(lors, memLoc); 
     }
     //std::string test

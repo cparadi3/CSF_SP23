@@ -12,6 +12,6 @@ class Set {
     //void changeValue(Block value);
     void add(Block value);
     void replace(Block value);
-    bool get(std::string value);
+    bool get(unsigned value);
 };
 #endif

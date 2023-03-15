@@ -8,11 +8,11 @@ Block::Block() {
         data[i] = '0';
     }
     */
-    this->data = "00000000";
+    this->data = 0;
 }
 
 //constructor with string value argument
-Block::Block(std::string input) {
+Block::Block(unsigned input) {
     this->data = input;
 }
 Block::~Block() {
@@ -20,24 +20,27 @@ Block::~Block() {
     //Don't think we need anything, nothing to free
 }
 
-void Block::changeValue(std::string input) {
+void Block::changeValue(unsigned input) {
     data = input;
 }
 
-std::string Block::getData() {
+unsigned getData() {
     return data;
 }
 
+/*
 bool Block::operator == (Block compareTo) {
     /*
     if (compareTo.getData() == this->getData()) {
         return true;
     }
-    */
+    
    //pretty sure need to use compare for strings
     if(this->getData().compare(compareTo.getData()) == 0) {
         return true;
     }
       return false; 
     
+    
 }
+*/

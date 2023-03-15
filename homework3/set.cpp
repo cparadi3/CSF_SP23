@@ -24,9 +24,9 @@ void Set::replace(Block value) {
 }
 
 //check if a value is in the set (true if it is, false if it isnt)
-bool Set::get(std::string value) {
+bool Set::get(unsigned value) {
     for(std::vector<Block>::iterator it = blockVector->begin(); it != blockVector->end(); it++) {
-        if (value.compare(it->getData()) == 0) {
+        if (it->getData() == value) {
             return true;
         }
     }
