@@ -35,3 +35,7 @@ bool Set::get(unsigned value) {
     }
     return false;
 }
+
+void Set::setDirty(unsigned offset) {
+    blockVector->at(offset).makeDirty();
+}

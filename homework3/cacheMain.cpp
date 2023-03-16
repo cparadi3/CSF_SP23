@@ -8,8 +8,11 @@ int main(int argc, char *argv[]) {
     int sets = atoi(argv[1]);
     int blocks = atoi(argv[2]);
     int bytes = atoi(argv[3]);
+    //std::string throughOrBack = argv[4];
+    //std::string allocateNoAllocate = argv[5];
+    //std::string eviction = argv[6];
     // TODO: add other arg parameters
-    std::ifstream inf{argv[4]};
+    std::ifstream inf{argv[4]}; //Don't think we need to do this
     Cache *myCache = new Cache(sets, blocks, bytes);
     while (inf) {
       std::string lors;
@@ -17,6 +20,9 @@ int main(int argc, char *argv[]) {
       if (lors.compare("") == 0) {
         break;
       } 
+      if(lors.compare("l")!= 0 && lors.compare("s") != 0) {
+        std::cerr << "Incorrect command\n";
+      }
       std::string temp;
       //TODO: figure out how to get the 0x out of the string (or if you have to)
       unsigned memLoc;

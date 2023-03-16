@@ -11,6 +11,8 @@ Cache::Cache(int numSets, int numBlocks, int numBytes) {
     this->numBlocks = numBlocks;
     this->numBytes = numBytes;
     this->setVector = new std::vector<Set>;
+    this->total_loads = 0;
+    this->total_stores = 0;
     load_hits = 0;
     load_misses = 0;
     store_hits = 0;
@@ -103,12 +105,20 @@ unsigned Cache::getOffset(unsigned memLoc, unsigned offsetBits) {
 // perform the appropriate operation on a hit
 void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate) {
     if(command.compare("l") == 0) {
+        total_loads += 1;
         load_hits += 1;
         total_cycles += 1;
     }
+    //Store Hit
     else {
+        total_stores +=1;
         if(writeThrough.compare("write-through") == 0) {
-            if(writeAllocate.compare("write-allocate") == 0) {}
+            if(writeAllocate.compare("write-allocate") == 0) {
+                //write-through write-allocate
+                store_hits+=1;
+                total_cycles+=100;
+            }
+            //write-through no-write-allocate
             else {
             store_hits += 1;
             total_cycles += 100;
@@ -117,9 +127,12 @@ void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string comma
         }
         else {
             //write_back write-allocate
-            if(writeAllocate.compare("write-allocate") == 0) {}
-            //write-back no-write-allocate
+            if(writeAllocate.compare("write-allocate") == 0) {
+                store_hits += 1;
+                setVector->at(index).setDirty(offset);
+            }
             else {
+            //write-back no-write-allocate
             store_hits += 1;
             total_cycles += 100;
             }
@@ -131,17 +144,25 @@ void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string comma
 // perform the appropriate operation on a miss
 void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate) {
      if(command.compare("l") == 0) {
+        total_loads += 1;
+        Block tempBlock = Block(tag);
+        setVector->at(index).replace(offset, tempBlock);
+        load_misses += 1;
+        total_cycles += 100;
+        /*
         if(writeThrough.compare("write-through") == 0) {
             if(writeAllocate.compare("write-allocate") == 0) {
                 //write-through write-allocate
+
             }
             else {
                 //write-through no-write-allocate
                 Block tempBlock = Block(tag);
-                setVector->at(index).replace(index, tempBlock);
+                setVector->at(index).replace(offset, tempBlock);
                 load_misses += 1;
                 total_cycles += 100;
             }
+            
         }
         else {
             //write-back
@@ -152,15 +173,17 @@ void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string comm
                 //write-back no-write-allocate
             }
         }
+        */
     }
     else {
+        total_stores += 1;
+        store_misses += 1;
           if(writeThrough.compare("write-through") == 0) {
             if(writeAllocate.compare("write-allocate") == 0) {
-                //write-through write-allocate
+                total_cycles += 200;
             }
             else {
                 //write-through no-write-allocate
-                store_misses +=1;
                 total_cycles += 100;
             }
         }
@@ -168,6 +191,10 @@ void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string comm
             //write-back
             if(writeAllocate.compare("write-allocate") == 0) {
                 //write-back write-allocate
+                total_cycles += 1;
+                Block tempBlock = Block(tag);
+                setVector->at(index).replace(offset, tempBlock);
+                setVector->at(index).setDirty(offset);
             }
             else {
                 //write-back no-write-allocate

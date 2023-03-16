@@ -15,7 +15,7 @@ class Block {
         //void fillAddress(char location[8], std::string memAddress);
         void changeValue(unsigned input);
         unsigned getData();
-
+        void makeDirty();
         bool operator == (Block compareTo);
 };
 #endif

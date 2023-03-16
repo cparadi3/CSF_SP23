@@ -29,7 +29,9 @@ unsigned Block::getData() {
     return tag;
 }
 
-
+void Block::makeDirty() {
+    dirty = true;
+}
 bool Block::operator == (Block compareTo) {
     if (compareTo.getData() == this->getData()) {
         return true;

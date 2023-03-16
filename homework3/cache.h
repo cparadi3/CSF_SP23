@@ -11,6 +11,8 @@ class Cache {
     int numBlocks;
     int numBytes;
     //metadata
+    int total_loads;
+    int total_stores;
     int load_hits;
     int load_misses;
     int store_hits;
