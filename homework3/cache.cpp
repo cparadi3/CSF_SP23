@@ -74,13 +74,17 @@ bool Cache::find(unsigned index, unsigned offset, unsigned tag) {
 //get the index from the unsigned memory location
 unsigned Cache::getIndex(unsigned memLoc, unsigned offsetBits, unsigned indexBits) {
     unsigned indexNum = memLoc >> offsetBits;
+    ////unsigned tagEnd = (1 << indexBits -1);
+    ////indexNum = indexNum & tagEnd;
     //unsigned indexBits = log2(numSets);
     //shift back and forth to isolate the bits 
+    
     if (indexBits == 0) {
         return 0; // if there's only one set the index will always be zero
     }
     indexNum = indexNum << (32 - indexBits);
     indexNum = indexNum >> (32 - indexBits);
+    
     return indexNum;
 }
 
@@ -133,6 +137,7 @@ void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string comma
             //write_back write-allocate
             if(writeAllocate.compare("write-allocate") == 0) {
                 store_hits += 1;
+                //need to fix this
                 setVector->at(index).setDirty(offset);
             }
             else {
@@ -146,7 +151,19 @@ void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string comma
 }
 
 void Cache::moveToBack(unsigned offset, unsigned index, unsigned tag) {
+   
    setVector->at(index).moveToBack(tag);
+   
+   /*for (int j = 0; j < setVector->length(); j++) {
+        for (unsigned i = 0; i < (unsigned) setVector->at(j).blockVector->size(); i++) {
+        if (setVector->at(j).blockVector->at(i).getData() == tag) {
+            setVector->at(j).blockVector->push_back(blockVector->at(i).getData());
+            setVector->at(j).blockVector->erase(blockVector->begin() + i);
+            break;
+        }
+    }
+   }
+   */
 }
 
 // perform the appropriate operation on a miss
@@ -188,10 +205,14 @@ void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string comm
         store_misses += 1;
           if(writeThrough.compare("write-through") == 0) {
             if(writeAllocate.compare("write-allocate") == 0) {
+                Block tempBlock = Block(tag);
+                total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes);
                 total_cycles += 200;
             }
             else {
                 //write-through no-write-allocate
+                Block tempBlock = Block(tag);
+                total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes);
                 total_cycles += 100;
             }
         }
