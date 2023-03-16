@@ -8,31 +8,39 @@ int main(int argc, char *argv[]) {
     int sets = atoi(argv[1]);
     int blocks = atoi(argv[2]);
     int bytes = atoi(argv[3]);
-    //std::string throughOrBack = argv[4];
-    //std::string allocateNoAllocate = argv[5];
-    //std::string eviction = argv[6];
+    std::string throughOrBack = argv[4];
+    std::string allocateNoAllocate = argv[5];
+    std::string eviction = argv[6];
     // TODO: add other arg parameters
-    std::ifstream inf{argv[4]}; //Don't think we need to do this
+    //std::ifstream inf{argv[7]}; //Don't think we need to do this
     Cache *myCache = new Cache(sets, blocks, bytes);
-    while (inf) {
+    std::string  inf;
+    //std::cin >> inf;
+    while (std::cin) {
+      //getline(std::cin, inf)
+      //std::string lors = inf.substr(0, inf.find(" "));
       std::string lors;
-      inf >> lors;
+      std::cin >> lors;
       if (lors.compare("") == 0) {
         break;
       } 
+      //inf.erase(0,1);
       if(lors.compare("l")!= 0 && lors.compare("s") != 0) {
         std::cerr << "Incorrect command\n";
       }
       std::string temp;
-      //TODO: figure out how to get the 0x out of the string (or if you have to)
-      unsigned memLoc;
-      //inf >> temp;
+      //temp = inf.substr(0, inf.find(" "));
+      
+      //unsigned memLoc = (unsigned) stoul(temp);
+      //cin >> temp;
       //temp.erase(0,1);
-      inf >> std::hex >> memLoc;
+      unsigned memLoc;
+      std::cin >> std::hex >> memLoc;
+
       std::string garbage;
-      inf >> garbage;
+      std::cin >> garbage;
       //std::cout << lors << " " << memLoc << '\n';
-      myCache->attempt(lors, memLoc); 
+      myCache->attempt(lors, memLoc, throughOrBack, allocateNoAllocate); 
     }
     //std::string test
      //Set temp = myCache->setVector->at(0);

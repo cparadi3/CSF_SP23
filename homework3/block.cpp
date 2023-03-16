@@ -9,6 +9,7 @@ Block::Block() {
     }
     */
     this->tag = 0;
+    this->dirty = false;
 }
 
 //constructor with string value argument
@@ -37,4 +38,8 @@ bool Block::operator == (Block compareTo) {
         return true;
     }
     return false; 
+}
+
+bool Block::isDirty() {
+    return dirty;
 }

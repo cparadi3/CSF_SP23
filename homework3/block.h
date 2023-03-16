@@ -16,6 +16,7 @@ class Block {
         void changeValue(unsigned input);
         unsigned getData();
         void makeDirty();
+        bool isDirty();
         bool operator == (Block compareTo);
 };
 #endif

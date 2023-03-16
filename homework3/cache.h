@@ -22,7 +22,7 @@ class Cache {
     public:
     Cache(int numSets, int numBlocks, int numBytes);
     ~Cache();
-    void attempt(std::string lors, unsigned memLoc);
+    void attempt(std::string lors, unsigned memLoc, std::string write, std::string allocate);
     void print();
     //try to find tag value in cache. true means hit, false means miss
     bool find(unsigned index, unsigned offset, unsigned tag);
@@ -36,6 +36,6 @@ class Cache {
     void hit(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate);
     // perform the appropriate operation on a miss
     void miss(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate);
-    void moveToBack(unsigned offset, unsigned index);
+    void moveToBack(unsigned offset, unsigned index, unsigned tag);
 };
 #endif

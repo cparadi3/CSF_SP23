@@ -38,7 +38,7 @@ Cache::~Cache() {
     delete this->setVector;
 }
 
-void Cache::attempt(std::string lors, unsigned memLoc) {
+void Cache::attempt(std::string lors, unsigned memLoc, std::string write, std::string allocate) {
 
     //look for tag in memory
     unsigned offsetBits = (unsigned) log2(numBlocks);
@@ -46,10 +46,10 @@ void Cache::attempt(std::string lors, unsigned memLoc) {
     unsigned index = getIndex(memLoc, offsetBits, indexBits);
     unsigned offset = getOffset(memLoc, offsetBits);
     unsigned tag = getTag(memLoc, offsetBits, indexBits);
-    bool test = find(index, offset, tag); //delete later
-    std::string write = "write-through" ; //DELETE LATER
-    std::string allocate = "no-write-allocate"; //delete later
-    if (test) {
+    //bool test = find(index, offset, tag); //delete later
+    //std::string write = "write-through" ; //DELETE LATER
+    //std::string allocate = "no-write-allocate"; //delete later
+    if (find(index, offset, tag)) {
         hit(tag, index, offset, lors, write, allocate);
     } else {
         miss(tag, index, offset, lors, write, allocate);
@@ -104,14 +104,17 @@ unsigned Cache::getOffset(unsigned memLoc, unsigned offsetBits) {
 
 // perform the appropriate operation on a hit
 void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate) {
+   //load hit
     if(command.compare("l") == 0) {
         total_loads += 1;
         load_hits += 1;
         total_cycles += 1;
+        moveToBack(offset, index, tag);
     }
     //Store Hit
     else {
         total_stores +=1;
+        moveToBack(offset, index, tag);
         if(writeThrough.compare("write-through") == 0) {
             if(writeAllocate.compare("write-allocate") == 0) {
                 //write-through write-allocate
@@ -141,8 +144,8 @@ void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string comma
     }
 }
 
-void Cache::moveToBack(unsigned offset, unsigned index) {
-   setVector->at(index).moveToBack(offset);
+void Cache::moveToBack(unsigned offset, unsigned index, unsigned tag) {
+   setVector->at(index).moveToBack(tag);
 }
 
 // perform the appropriate operation on a miss
@@ -150,7 +153,7 @@ void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string comm
      if(command.compare("l") == 0) {
         total_loads += 1;
         Block tempBlock = Block(tag);
-        setVector->at(index).replace(offset, tempBlock);
+        total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes);
         load_misses += 1;
         total_cycles += 100;
         /*
@@ -197,7 +200,7 @@ void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string comm
                 //write-back write-allocate
                 total_cycles += 1;
                 Block tempBlock = Block(tag);
-                setVector->at(index).replace(offset, tempBlock);
+                total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes);
                 setVector->at(index).setDirty(offset);
             }
             else {
@@ -208,11 +211,13 @@ void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string comm
 }
 
 void Cache::print() {
-    std::cout << "load hits: " << load_hits << '\n';
-    std::cout << "load misses: " << load_misses << '\n';
-    std::cout << "store hits: " << store_hits << '\n';
-    std::cout << "store misses: " << store_misses << '\n';
-    std::cout << "total cycles: " << total_cycles << '\n';
+    std::cout << "Total loads: " << total_loads << '\n';
+    std::cout << "Total stores: " << total_stores << '\n';
+    std::cout << "Load hits: " << load_hits << '\n';
+    std::cout << "Load misses: " << load_misses << '\n';
+    std::cout << "Store hits: " << store_hits << '\n';
+    std::cout << "Store misses: " << store_misses << '\n';
+    std::cout << "Total cycles: " << total_cycles << '\n';
  }
 /*
  void Cache::attempt(std::string lors, unsigned memLoc) {
