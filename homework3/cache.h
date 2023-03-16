@@ -36,5 +36,6 @@ class Cache {
     void hit(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate);
     // perform the appropriate operation on a miss
     void miss(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate);
+    void moveToBack(unsigned offset, unsigned index);
 };
 #endif

@@ -15,5 +15,6 @@ class Set {
     void replace(unsigned index, Block value);
     bool get(unsigned value);
     void setDirty(unsigned offset);
+    void moveToBack(unsigned offset);
 };
 #endif

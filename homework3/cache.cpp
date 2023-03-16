@@ -141,6 +141,10 @@ void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string comma
     }
 }
 
+void Cache::moveToBack(unsigned offset, unsigned index) {
+   setVector->at(index).moveToBack(offset);
+}
+
 // perform the appropriate operation on a miss
 void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate) {
      if(command.compare("l") == 0) {

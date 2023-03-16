@@ -22,8 +22,11 @@ void Set::replace(unsigned index, Block value) {
     Block *temp = &(blockVector->at(it - blockVector->begin()));
     temp->changeValue(value.getData());
     */
-    blockVector->insert(blockVector->begin() + index, value);
-    blockVector->erase(blockVector->begin() + 1);
+   blockVector->push_back(value);
+   blockVector->erase(blockVector->begin());
+    //blockVector->insert(blockVector->begin() + index, value);
+    //blockVector->erase(blockVector->begin() + 1);
+
 }
 
 //check if a value is in the set (true if it is, false if it isnt)
@@ -38,4 +41,10 @@ bool Set::get(unsigned value) {
 
 void Set::setDirty(unsigned offset) {
     blockVector->at(offset).makeDirty();
+}
+
+void Set::moveToBack(unsigned offset) {
+    Block temp = blockVector->at(offset);
+    blockVector->push_back(temp);
+    blockVector->erase(blockVector->begin() + offset);
 }
