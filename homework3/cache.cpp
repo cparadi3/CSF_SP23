@@ -98,8 +98,9 @@ unsigned Cache::getOffset(unsigned memLoc, unsigned offsetBits) {
 
 //get the tag from unsigned memory location
  unsigned Cache::getTag(unsigned memLoc, unsigned offsetBits, unsigned indexBits) {
-    unsigned tagNum = memLoc >> (indexBits + offsetBits);
-    return tagNum;
+    //unsigned tagNum = memLoc >> (indexBits + offsetBits);
+    //return tagNum;
+    return memLoc;
  } 
 
 // perform the appropriate operation on a hit

@@ -8,8 +8,8 @@ int main(int argc, char *argv[]) {
     int sets = atoi(argv[1]);
     int blocks = atoi(argv[2]);
     int bytes = atoi(argv[3]);
-    std::string throughOrBack = argv[4];
-    std::string allocateNoAllocate = argv[5];
+    std::string throughOrBack = argv[5];
+    std::string allocateNoAllocate = argv[4];
     std::string eviction = argv[6];
     // TODO: add other arg parameters
     //std::ifstream inf{argv[7]}; //Don't think we need to do this
