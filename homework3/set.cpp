@@ -27,7 +27,7 @@ unsigned Set::replace(unsigned index, Block value, unsigned numBytes) {
         if (blockVector->at(0).isDirty()) {
            total_cycles += 100 * (numBytes / 4);
         }
-        blockVector->erase(blockVector->begin());
+        //blockVector->erase(blockVector->begin());
     //blockVector->insert(blockVector->begin() + index, value);
     //blockVector->erase(blockVector->begin() + 1);
     return total_cycles;

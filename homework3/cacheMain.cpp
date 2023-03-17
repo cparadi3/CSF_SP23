@@ -11,8 +11,23 @@ int main(int argc, char *argv[]) {
     std::string throughOrBack = argv[5];
     std::string allocateNoAllocate = argv[4];
     std::string eviction = argv[6];
-    // TODO: add other arg parameters
+    // TODO: add other arg parameters 
     //std::ifstream inf{argv[7]}; //Don't think we need to do this
+    if(sets % 2 != 0 && sets != 1) {
+      std::cerr << "Number of sets not a power of 2\n";
+      return 1;
+    }
+    if (bytes %2 != 0) {
+      std::cerr << "Block size not a power of 2\n";
+      return 1;
+    }
+    if (bytes < 4) {
+      std::cerr << "Block size must be greater than or equal to 4\n";
+    }
+    if(throughOrBack.compare("write-back") == 0 && allocateNoAllocate.compare("no-write-allocate") == 0) {
+      std::cerr << "Cannot make cache with 'write-back and 'no-write-allocate\n";
+      return 1;
+    }
     Cache *myCache = new Cache(sets, blocks, bytes);
     std::string  inf;
     //std::cin >> inf;

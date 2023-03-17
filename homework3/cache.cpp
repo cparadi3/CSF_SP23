@@ -82,10 +82,13 @@ unsigned Cache::getIndex(unsigned memLoc, unsigned offsetBits, unsigned indexBit
     if (indexBits == 0) {
         return 0; // if there's only one set the index will always be zero
     }
+    /*
     indexNum = indexNum << (32 - indexBits);
     indexNum = indexNum >> (32 - indexBits);
-    
-    return indexNum;
+    */
+   unsigned endTag = (1 << indexBits) - 1;
+   unsigned index = indexNum & endTag;
+    return index;
 }
 
 //get the offset from unsigned memory location
@@ -135,17 +138,10 @@ void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string comma
         }
         else {
             //write_back write-allocate
-            if(writeAllocate.compare("write-allocate") == 0) {
-                store_hits += 1;
-                //need to fix this
-                setVector->at(index).setDirty(offset);
-            }
-            else {
-            //write-back no-write-allocate
             store_hits += 1;
-            total_cycles += 100;
-            }
-            //Mark block dirty
+            //need to fix this
+            setVector->at(index).setDirty(offset);
+            
         }
     }
 }
@@ -217,17 +213,11 @@ void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string comm
             }
         }
         else {
-            //write-back
-            if(writeAllocate.compare("write-allocate") == 0) {
                 //write-back write-allocate
-                total_cycles += 1;
-                Block tempBlock = Block(tag);
-                total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes);
-                setVector->at(index).setDirty(offset);
-            }
-            else {
-                //write-back no-write-allocate
-            }
+            total_cycles += 1;
+            Block tempBlock = Block(tag);
+            total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes);
+            setVector->at(index).setDirty(offset);
         }
     }
 }
