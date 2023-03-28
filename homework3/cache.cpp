@@ -88,6 +88,7 @@ unsigned Cache::getIndex(unsigned memLoc, unsigned offsetBits, unsigned indexBit
     */
    unsigned endTag = (1 << indexBits) - 1;
    unsigned index = indexNum & endTag;
+    //unsigned index = (memLoc >> (int) log2(numBytes)) & numSets - 1;
     return index;
 }
 
@@ -98,16 +99,16 @@ unsigned Cache::getOffset(unsigned memLoc, unsigned offsetBits) {
     if (offsetBits == 0) {
         return 0; //no offset bits, offset will always be zero (direct mapped i think)
     }
-    unsigned offsetNum = memLoc >> (32 - offsetBits);
-    offsetNum = memLoc << (32 - offsetBits);
-    return offsetNum; 
+    //unsigned offsetNum = memLoc >> (32 - offsetBits);
+    //offsetNum = memLoc << (32 - offsetBits);
+    return memLoc & (numBytes - 1); 
 }
 
 //get the tag from unsigned memory location
  unsigned Cache::getTag(unsigned memLoc, unsigned offsetBits, unsigned indexBits) {
     //unsigned tagNum = memLoc >> (indexBits + offsetBits);
     //return tagNum;
-    return memLoc;
+    return memLoc >> (int) log2(numSets * numBlocks);
  } 
 
 // perform the appropriate operation on a hit
@@ -207,8 +208,8 @@ void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string comm
             }
             else {
                 //write-through no-write-allocate
-                Block tempBlock = Block(tag);
-                total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes);
+                //Block tempBlock = Block(tag);
+                //total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes);
                 total_cycles += 100;
             }
         }
