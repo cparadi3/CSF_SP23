@@ -21,7 +21,7 @@ Cache::Cache(int numSets, int numBlocks, int numBytes) {
     for (int i = 0; i < numSets; i++) {
         Set temp = Set();
         setVector->push_back(temp);
-        for (int j = 0; j < numBlocks; j++) {
+        for (unsigned j = 0; j < numBlocks; j++) {
             Block bloq = Block();
             temp.add(bloq);
             //std::cout << bloq.getData() << " " << i << " " << j << '\n' ;
@@ -75,6 +75,10 @@ std::pair<int, bool> Cache::find(unsigned index, unsigned offset, unsigned tag) 
             
         }
         */
+        //edge case, since we initialize everything in the cache to zero
+        if ((index == 0) && (it - setVector->begin() > 0)) {
+            break;
+        }
         for(std::vector<Block>::iterator it2 = it->blockVector->begin(); it2 != it->blockVector->end(); it2++) {
         //increment all the ages here. should only have to iterate through everything once
         if (it2->getData() == tag) {
@@ -86,7 +90,7 @@ std::pair<int, bool> Cache::find(unsigned index, unsigned offset, unsigned tag) 
         it2->incAge();
     }
      }
-     if (returnVal < 0) {
+     if ((returnVal < 0) || (index != returnVal)) {
         return std::pair(oldestSet, false);
      }
      return std::pair(returnVal, true);
