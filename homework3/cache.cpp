@@ -77,13 +77,13 @@ std::pair<int, bool> Cache::find(unsigned index, unsigned offset, unsigned tag) 
         */
         for(std::vector<Block>::iterator it2 = it->blockVector->begin(); it2 != it->blockVector->end(); it2++) {
         //increment all the ages here. should only have to iterate through everything once
-        it2->incAge();
         if (it2->getData() == tag) {
             returnVal = it - setVector->begin();
         } else if (it2->getAge() > oldestVal) {
             oldestVal = it2->getAge();
             oldestSet = it - setVector ->begin();
         }
+        it2->incAge();
     }
      }
      if (returnVal < 0) {

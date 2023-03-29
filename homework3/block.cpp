@@ -17,6 +17,7 @@ Block::Block() {
 Block::Block(unsigned input) {
     this->tag = input;
     this->dirty = false;
+    this->age = 0;
 }
 Block::~Block() {
     //TODO: implement

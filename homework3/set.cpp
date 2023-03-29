@@ -22,6 +22,17 @@ unsigned Set::replace(unsigned index, Block value, unsigned numBytes) {
     Block *temp = &(blockVector->at(it - blockVector->begin()));
     temp->changeValue(value.getData());
     */
+    //sanity check, make sure oldest block is evicted
+    /*
+    int oldestBlockPos = 0;
+    for (std::vector<Block>::iterator it = blockVector->begin(); it != blockVector->end(); it++) {
+        if(it->getAge() > blockVector->at(oldestBlockPos).getAge()) {
+            oldestBlockPos = it - blockVector->begin();
+        }
+    }
+    //to get back to what we had earlier, delete this ^ and replace oldestBlockPos with zero
+    //^^checking if our "move to front" heuristic works
+    */
         unsigned total_cycles = 0;
         blockVector->push_back(value);
         if (blockVector->at(0).isDirty()) {
