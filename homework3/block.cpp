@@ -10,6 +10,7 @@ Block::Block() {
     */
     this->tag = 0;
     this->dirty = false;
+    this->age = 0;
 }
 
 //constructor with string value argument
@@ -42,4 +43,12 @@ bool Block::operator == (Block compareTo) {
 
 bool Block::isDirty() {
     return dirty;
+}
+
+unsigned Block::getAge() {
+    return age;
+}
+
+void Block::incAge() {
+    age += 1;
 }

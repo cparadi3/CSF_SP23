@@ -24,8 +24,10 @@ class Cache {
     ~Cache();
     void attempt(std::string lors, unsigned memLoc, std::string write, std::string allocate);
     void print();
-    //try to find tag value in cache. true means hit, false means miss
-    bool find(unsigned index, unsigned offset, unsigned tag);
+    //try to find tag value in cache. returns set it's in! -1 means miss
+    //now it's a pair of int and bool. true means its in the int index,
+    //false means the int is where the oldest data point is. 
+    std::pair<int, bool> find(unsigned index, unsigned offset, unsigned tag);
     //get the index from the unsigned memory location
     unsigned getIndex(unsigned memLoc, unsigned offsetBits, unsigned indexBits);
     //get the offset from unsigned memory location
@@ -37,5 +39,6 @@ class Cache {
     // perform the appropriate operation on a miss
     void miss(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate);
     void moveToBack(unsigned offset, unsigned index, unsigned tag);
+    
 };
 #endif

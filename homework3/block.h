@@ -8,6 +8,7 @@ class Block {
         //std::string data;
         unsigned tag;
         bool dirty;
+        unsigned age;
     public:
         Block();
         Block(unsigned input);
@@ -17,6 +18,8 @@ class Block {
         unsigned getData();
         void makeDirty();
         bool isDirty();
+        unsigned getAge();
+        void incAge();
         bool operator == (Block compareTo);
 };
 #endif

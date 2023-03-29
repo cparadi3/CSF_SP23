@@ -35,12 +35,15 @@ unsigned Set::replace(unsigned index, Block value, unsigned numBytes) {
 
 //check if a value is in the set (true if it is, false if it isnt)
 bool Set::get(unsigned value) {
+    bool returnVal = false;
     for(std::vector<Block>::iterator it = blockVector->begin(); it != blockVector->end(); it++) {
+        //increment all the ages here. should only have to iterate through everything once
+        it->incAge();
         if (it->getData() == value) {
-            return true;
+            returnVal = true;
         }
     }
-    return false;
+    return returnVal;
 }
 
 void Set::setDirty(unsigned offset) {

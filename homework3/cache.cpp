@@ -49,10 +49,11 @@ void Cache::attempt(std::string lors, unsigned memLoc, std::string write, std::s
     //bool test = find(index, offset, tag); //delete later
     //std::string write = "write-through" ; //DELETE LATER
     //std::string allocate = "no-write-allocate"; //delete later
-    if (find(index, offset, tag)) {
-        hit(tag, index, offset, lors, write, allocate);
+    std::pair<int, bool> setNum = find(index, offset, tag);
+    if (setNum.second) {
+        hit(tag, setNum.first, offset, lors, write, allocate);
     } else {
-        miss(tag, index, offset, lors, write, allocate);
+        miss(tag, setNum.first, offset, lors, write, allocate);
     }
     
     //perform appropriate operation depending on hit or miss & store or load
@@ -62,13 +63,33 @@ void Cache::attempt(std::string lors, unsigned memLoc, std::string write, std::s
 }
 
 //get the tag from unsigned memory location
-bool Cache::find(unsigned index, unsigned offset, unsigned tag) {
+std::pair<int, bool> Cache::find(unsigned index, unsigned offset, unsigned tag) {
+     int returnVal = -1;
+     //set containing the oldest value
+     int oldestSet = 0;
+     //actual oldest value
+     unsigned oldestVal = 0;
      for (std::vector<Set>::iterator it = setVector->begin(); it != setVector->end(); it++) {
-        if (it->get(tag)) {
-            return true;
+        /*if (it->get(tag)) {
+            returnVal = it - setVector->begin();
+            
         }
+        */
+        for(std::vector<Block>::iterator it2 = it->blockVector->begin(); it2 != it->blockVector->end(); it2++) {
+        //increment all the ages here. should only have to iterate through everything once
+        it2->incAge();
+        if (it2->getData() == tag) {
+            returnVal = it - setVector->begin();
+        } else if (it2->getAge() > oldestVal) {
+            oldestVal = it2->getAge();
+            oldestSet = it - setVector ->begin();
+        }
+    }
      }
-     return false;
+     if (returnVal < 0) {
+        return std::pair(oldestSet, false);
+     }
+     return std::pair(returnVal, true);
 }
 
 //get the index from the unsigned memory location
