@@ -51,9 +51,9 @@ void Cache::attempt(std::string lors, unsigned memLoc, std::string write, std::s
     //std::string allocate = "no-write-allocate"; //delete later
     std::pair<int, bool> setNum = find(index, offset, tag);
     if (setNum.second) {
-        hit(tag, setNum.first, offset, lors, write, allocate);
+        hit(tag, index, offset, lors, write, allocate);
     } else {
-        miss(tag, setNum.first, offset, lors, write, allocate);
+        miss(tag, index, offset, lors, write, allocate);
     }
     
     //perform appropriate operation depending on hit or miss & store or load

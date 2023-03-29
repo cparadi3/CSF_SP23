@@ -1,5 +1,6 @@
 #include <vector>
 #include <algorithm>
+#include <iostream>
 #include "set.h"
 #include "block.h"
 
@@ -76,12 +77,13 @@ void Set::moveToBack(unsigned tag) {
         }
     }
     */
-    
     for (unsigned i = 0; i < (unsigned) blockVector->size(); i++) {
         if (blockVector->at(i).getData() == tag) {
             blockVector->push_back(blockVector->at(i).getData());
             blockVector->erase(blockVector->begin() + i);
+            debug = true;
             break;
         }
     }
+    
 }
