@@ -146,7 +146,9 @@ unsigned Cache::getOffset(unsigned memLoc, unsigned offsetBits) {
  unsigned Cache::getTag(unsigned memLoc, unsigned offsetBits, unsigned indexBits) {
     //unsigned tagNum = memLoc >> (indexBits + offsetBits);
     //return tagNum;
-    return memLoc >> (int) log2(numSets * numBlocks);
+    
+        return memLoc >> (int) log2(numSets * numBytes);
+
  } 
 
 // perform the appropriate operation on a hit
@@ -183,6 +185,7 @@ void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string comma
         else {
             //write_back write-allocate
             store_hits += 1;
+            total_cycles += 1;
             //need to fix this
             setVector->at(index).setDirty(tag);
             
@@ -212,7 +215,7 @@ void Cache::miss(unsigned numBlocks, unsigned tag, unsigned index, unsigned offs
         Block tempBlock = Block(tag);
         total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes, numBlocks);
         load_misses += 1;
-        total_cycles += 100;
+        total_cycles += (100 * (numBytes / 4));
         /*
         if(writeThrough.compare("write-through") == 0) {
             if(writeAllocate.compare("write-allocate") == 0) {
@@ -246,7 +249,7 @@ void Cache::miss(unsigned numBlocks, unsigned tag, unsigned index, unsigned offs
             if(writeAllocate.compare("write-allocate") == 0) {
                 Block tempBlock = Block(tag);
                 total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes, numBlocks);
-                total_cycles += 200;
+                total_cycles += (100 * (numBytes/4) + 2);
             }
             else {
                 //write-through no-write-allocate
@@ -257,9 +260,8 @@ void Cache::miss(unsigned numBlocks, unsigned tag, unsigned index, unsigned offs
         }
         else {
                 //write-back write-allocate
-            total_cycles += 1;
+            total_cycles += 1 + (100 * (numBytes/4));
             Block tempBlock = Block(tag);
-            //std::cout<<"BREAKS\n";
             total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes, numBlocks);
             setVector->at(index).setDirty(tag);
         }

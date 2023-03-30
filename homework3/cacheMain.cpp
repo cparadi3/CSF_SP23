@@ -3,7 +3,15 @@
 #include <iostream>
 #include <fstream>
 #include "cache.h"
-
+bool powerOfTwo(int numSets) {
+  if (numSets == 2) {
+    return true;
+  }
+  if (numSets % 2 != 0) {
+    return false;
+  }
+  return powerOfTwo(numSets/2);
+}
 int main(int argc, char *argv[]) {
     int sets = atoi(argv[1]);
     int blocks = atoi(argv[2]);
@@ -13,7 +21,7 @@ int main(int argc, char *argv[]) {
     std::string eviction = argv[6];
     // TODO: add other arg parameters 
     //std::ifstream inf{argv[7]}; //Don't think we need to do this
-    if(sets % 2 != 0 && sets != 1) {
+    if(powerOfTwo(sets) == false && sets != 1) {
       std::cerr << "Number of sets not a power of 2\n";
       return 1;
     }
@@ -23,6 +31,7 @@ int main(int argc, char *argv[]) {
     }
     if (bytes < 4) {
       std::cerr << "Block size must be greater than or equal to 4\n";
+      return 1;
     }
     if(throughOrBack.compare("write-back") == 0 && allocateNoAllocate.compare("no-write-allocate") == 0) {
       std::cerr << "Cannot make cache with 'write-back and 'no-write-allocate\n";
