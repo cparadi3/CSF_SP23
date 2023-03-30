@@ -80,10 +80,10 @@ std::pair<int, bool> Cache::find(unsigned index, unsigned offset, unsigned tag) 
         */
         //edge case, since we initialize everything in the cache to zero
         
-        /*if ((index == 0) && (it - setVector->begin() > 0)) {
+        if (index < (it - setVector->begin())) {
             break;
         }
-        */
+        
 
         for(std::vector<Block>::iterator it2 = it->blockVector->begin(); it2 != it->blockVector->end(); it2++) {
         //increment all the ages here. should only have to iterate through everything once
@@ -154,7 +154,7 @@ void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string comma
         total_loads += 1;
         load_hits += 1;
         total_cycles += 1;
-        std::cout << tag << " " << index << " " << offset << '\n'; //delete later
+        //std::cout << tag << " " << index << " " << offset << '\n'; //delete later
         if (lruORFifo.compare("lru") == 0) {
         moveToBack(offset, index, tag);
         }
