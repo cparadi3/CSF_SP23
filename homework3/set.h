@@ -12,9 +12,9 @@ class Set {
     ~Set();
     //void changeValue(Block value);
     void add(Block value);
-    unsigned replace(unsigned index, Block value, unsigned numBytes);
+    unsigned replace(unsigned index, Block value, unsigned numBytes, unsigned numBlocks);
     bool get(unsigned value);
-    void setDirty(unsigned offset);
+    void setDirty(unsigned tag);
     void moveToBack(unsigned tag);
 };
 #endif

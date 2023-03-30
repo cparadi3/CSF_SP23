@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
       std::string garbage;
       std::cin >> garbage;
       //std::cout << lors << " " << memLoc << '\n';
-      myCache->attempt(lors, memLoc, throughOrBack, allocateNoAllocate); 
+      myCache->attempt(lors, memLoc, blocks, throughOrBack, allocateNoAllocate, eviction); 
     }
     //std::string test
      //Set temp = myCache->setVector->at(0);

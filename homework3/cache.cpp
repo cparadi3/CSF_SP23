@@ -21,11 +21,13 @@ Cache::Cache(int numSets, int numBlocks, int numBytes) {
     for (int i = 0; i < numSets; i++) {
         Set temp = Set();
         setVector->push_back(temp);
+        /*
         for (unsigned j = 0; j < numBlocks; j++) {
             Block bloq = Block();
             temp.add(bloq);
             //std::cout << bloq.getData() << " " << i << " " << j << '\n' ;
         }
+        */
     }
 }
 
@@ -38,7 +40,7 @@ Cache::~Cache() {
     delete this->setVector;
 }
 
-void Cache::attempt(std::string lors, unsigned memLoc, std::string write, std::string allocate) {
+void Cache::attempt(std::string lors, unsigned memLoc, unsigned numBlocks, std::string write, std::string allocate, std::string eviction) {
 
     //look for tag in memory
     unsigned offsetBits = (unsigned) log2(numBlocks);
@@ -51,9 +53,9 @@ void Cache::attempt(std::string lors, unsigned memLoc, std::string write, std::s
     //std::string allocate = "no-write-allocate"; //delete later
     std::pair<int, bool> setNum = find(index, offset, tag);
     if (setNum.second) {
-        hit(tag, index, offset, lors, write, allocate);
+        hit(tag, index, offset, lors, write, allocate, eviction);
     } else {
-        miss(tag, index, offset, lors, write, allocate);
+        miss(numBlocks, tag, index, offset, lors, write, allocate);
     }
     
     //perform appropriate operation depending on hit or miss & store or load
@@ -67,6 +69,7 @@ std::pair<int, bool> Cache::find(unsigned index, unsigned offset, unsigned tag) 
      int returnVal = -1;
      //set containing the oldest value
      int oldestSet = 0;
+     std::pair<int, bool> tempPair;
      //actual oldest value
      unsigned oldestVal = 0;
      for (std::vector<Set>::iterator it = setVector->begin(); it != setVector->end(); it++) {
@@ -81,6 +84,7 @@ std::pair<int, bool> Cache::find(unsigned index, unsigned offset, unsigned tag) 
         }
         for(std::vector<Block>::iterator it2 = it->blockVector->begin(); it2 != it->blockVector->end(); it2++) {
         //increment all the ages here. should only have to iterate through everything once
+        
         if (it2->getData() == tag) {
             returnVal = it - setVector->begin();
         } else if (it2->getAge() > oldestVal) {
@@ -90,10 +94,14 @@ std::pair<int, bool> Cache::find(unsigned index, unsigned offset, unsigned tag) 
         it2->incAge();
     }
      }
-     if ((returnVal < 0) || (index != returnVal)) {
-        return std::pair(oldestSet, false);
+     if ((returnVal < 0) || (index != (unsigned) returnVal)) {
+        tempPair.first = oldestSet;
+        tempPair.second = false;
+        return tempPair;
      }
-     return std::pair(returnVal, true);
+     tempPair.first = returnVal;
+     tempPair.second = true;
+     return tempPair;
 }
 
 //get the index from the unsigned memory location
@@ -111,9 +119,9 @@ unsigned Cache::getIndex(unsigned memLoc, unsigned offsetBits, unsigned indexBit
     indexNum = indexNum << (32 - indexBits);
     indexNum = indexNum >> (32 - indexBits);
     */
-   unsigned endTag = (1 << indexBits) - 1;
-   unsigned index = indexNum & endTag;
-    //unsigned index = (memLoc >> (int) log2(numBytes)) & numSets - 1;
+   //unsigned endTag = (1 << indexBits) - 1;
+   //unsigned index = indexNum & endTag;
+    unsigned index = (memLoc >> (int) log2(numBytes)) & numSets - 1;
     return index;
 }
 
@@ -137,18 +145,22 @@ unsigned Cache::getOffset(unsigned memLoc, unsigned offsetBits) {
  } 
 
 // perform the appropriate operation on a hit
-void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate) {
+void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate, std::string lruORFifo) {
    //load hit
     if(command.compare("l") == 0) {
         total_loads += 1;
         load_hits += 1;
         total_cycles += 1;
+        if (lruORFifo.compare("lru") == 0) {
         moveToBack(offset, index, tag);
+        }
     }
     //Store Hit
     else {
         total_stores +=1;
+        if (lruORFifo.compare("lru") == 0) {
         moveToBack(offset, index, tag);
+        }
         if(writeThrough.compare("write-through") == 0) {
             if(writeAllocate.compare("write-allocate") == 0) {
                 //write-through write-allocate
@@ -166,14 +178,13 @@ void Cache::hit(unsigned tag, unsigned index, unsigned offset, std::string comma
             //write_back write-allocate
             store_hits += 1;
             //need to fix this
-            setVector->at(index).setDirty(offset);
+            setVector->at(index).setDirty(tag);
             
         }
     }
 }
 
 void Cache::moveToBack(unsigned offset, unsigned index, unsigned tag) {
-   
    setVector->at(index).moveToBack(tag);
    
    /*for (int j = 0; j < setVector->length(); j++) {
@@ -189,11 +200,11 @@ void Cache::moveToBack(unsigned offset, unsigned index, unsigned tag) {
 }
 
 // perform the appropriate operation on a miss
-void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate) {
+void Cache::miss(unsigned numBlocks, unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate) {
      if(command.compare("l") == 0) {
         total_loads += 1;
         Block tempBlock = Block(tag);
-        total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes);
+        total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes, numBlocks);
         load_misses += 1;
         total_cycles += 100;
         /*
@@ -228,7 +239,7 @@ void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string comm
           if(writeThrough.compare("write-through") == 0) {
             if(writeAllocate.compare("write-allocate") == 0) {
                 Block tempBlock = Block(tag);
-                total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes);
+                total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes, numBlocks);
                 total_cycles += 200;
             }
             else {
@@ -242,8 +253,9 @@ void Cache::miss(unsigned tag, unsigned index, unsigned offset, std::string comm
                 //write-back write-allocate
             total_cycles += 1;
             Block tempBlock = Block(tag);
-            total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes);
-            setVector->at(index).setDirty(offset);
+            //std::cout<<"BREAKS\n";
+            total_cycles += setVector->at(index).replace(offset, tempBlock, numBytes, numBlocks);
+            setVector->at(index).setDirty(tag);
         }
     }
 }

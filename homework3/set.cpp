@@ -16,7 +16,7 @@ void Set::add(Block value) {
     blockVector->push_back(value);
 }
 
-unsigned Set::replace(unsigned index, Block value, unsigned numBytes) {
+unsigned Set::replace(unsigned index, Block value, unsigned numBytes, unsigned numBlocks) {
     //int index = this->find(value);
     /*std::vector<Block>::iterator it = blockVector->begin();
     it = std::find(blockVector->begin(), blockVector->end(), value);
@@ -25,21 +25,18 @@ unsigned Set::replace(unsigned index, Block value, unsigned numBytes) {
     */
     //sanity check, make sure oldest block is evicted
     
-    int oldestBlockPos = 0;
-    for (std::vector<Block>::iterator it = blockVector->begin(); it != blockVector->end(); it++) {
-        if(it->getAge() > blockVector->at(oldestBlockPos).getAge()) {
-            oldestBlockPos = it - blockVector->begin();
-        }
-    }
+    
     //to get back to what we had earlier, delete this ^ and replace oldestBlockPos with zero
     //^^checking if our "move to front" heuristic works
     
         unsigned total_cycles = 0;
         blockVector->push_back(value);
-        if (blockVector->at(oldestBlockPos).isDirty()) {
+        if (blockVector->at(0).isDirty()) {
            total_cycles += 100 * (numBytes / 4);
         }
-        blockVector->erase(blockVector->begin() + oldestBlockPos);
+        if(blockVector->size() == numBlocks + 1) {
+            blockVector->erase(blockVector->begin());
+        }
     //blockVector->insert(blockVector->begin() + index, value);
     //blockVector->erase(blockVector->begin() + 1);
     return total_cycles;
@@ -58,8 +55,13 @@ bool Set::get(unsigned value) {
     return returnVal;
 }
 
-void Set::setDirty(unsigned offset) {
-    blockVector->at(offset).makeDirty();
+void Set::setDirty(unsigned tag) {
+    for (unsigned i = 0; i < (unsigned) blockVector->size(); i++) {
+        if (blockVector->at(i).getData() == tag) {
+            blockVector->at(i).makeDirty();
+            break;
+        }
+    }
 }
 
 void Set::moveToBack(unsigned tag) {

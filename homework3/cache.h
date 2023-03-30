@@ -22,7 +22,7 @@ class Cache {
     public:
     Cache(int numSets, int numBlocks, int numBytes);
     ~Cache();
-    void attempt(std::string lors, unsigned memLoc, std::string write, std::string allocate);
+    void attempt(std::string lors, unsigned memLoc, unsigned numBlocks, std::string write, std::string allocate, std::string eviction);
     void print();
     //try to find tag value in cache. returns set it's in! -1 means miss
     //now it's a pair of int and bool. true means its in the int index,
@@ -35,9 +35,9 @@ class Cache {
     //get the tag from unsigned memory location
     unsigned getTag(unsigned memLoc, unsigned offsetBits, unsigned indexBits);
     // perform the appropriate operation on a hit
-    void hit(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate);
+    void hit(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate, std::string lruORFifo);
     // perform the appropriate operation on a miss
-    void miss(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate);
+    void miss(unsigned numBlocks, unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate);
     void moveToBack(unsigned offset, unsigned index, unsigned tag);
     
 };
