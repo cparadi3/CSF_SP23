@@ -80,6 +80,7 @@ std::pair<int, bool> Cache::find(unsigned index, unsigned offset, unsigned tag) 
         */
         //edge case, since we initialize everything in the cache to zero
         
+        
         if (index < (it - setVector->begin())) {
             break;
         }
@@ -90,7 +91,8 @@ std::pair<int, bool> Cache::find(unsigned index, unsigned offset, unsigned tag) 
         
         if (it2->getData() == tag) {
             returnVal = it - setVector->begin();
-        } else if (it2->getAge() > oldestVal) {
+        } //Useless DELETE
+        else if (it2->getAge() > oldestVal) {
             oldestVal = it2->getAge();
             oldestSet = it - setVector ->begin();
         }

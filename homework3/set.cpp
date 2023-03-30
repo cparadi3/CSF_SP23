@@ -32,10 +32,10 @@ unsigned Set::replace(unsigned index, Block value, unsigned numBytes, unsigned n
         unsigned total_cycles = 0;
         Block temp = Block(value);
         blockVector->push_back(temp);
-        if (blockVector->at(0).isDirty()) {
-           total_cycles += 100 * (numBytes / 4);
-        }
         if(blockVector->size() == numBlocks + 1) {
+            if (blockVector->at(0).isDirty()) {
+                total_cycles += 100 * (numBytes / 4);
+            }
             blockVector->erase(blockVector->begin());
         }
     //blockVector->insert(blockVector->begin() + index, value);
