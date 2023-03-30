@@ -16,7 +16,7 @@ void Set::add(Block value) {
     blockVector->push_back(value);
 }
 
-unsigned Set::replace(unsigned index, Block value, unsigned numBytes, unsigned numBlocks) {
+unsigned Set::replace(Block value, unsigned numBytes, unsigned numBlocks) {
     //int index = this->find(value);
     /*std::vector<Block>::iterator it = blockVector->begin();
     it = std::find(blockVector->begin(), blockVector->end(), value);
@@ -43,18 +43,7 @@ unsigned Set::replace(unsigned index, Block value, unsigned numBytes, unsigned n
     return total_cycles;
 }
 
-//check if a value is in the set (true if it is, false if it isnt)
-bool Set::get(unsigned value) {
-    bool returnVal = false;
-    for(std::vector<Block>::iterator it = blockVector->begin(); it != blockVector->end(); it++) {
-        //increment all the ages here. should only have to iterate through everything once
-        it->incAge();
-        if (it->getData() == value) {
-            returnVal = true;
-        }
-    }
-    return returnVal;
-}
+
 
 void Set::setDirty(unsigned tag) {
     for (unsigned i = 0; i < (unsigned) blockVector->size(); i++) {

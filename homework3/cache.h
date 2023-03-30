@@ -27,18 +27,16 @@ class Cache {
     //try to find tag value in cache. returns set it's in! -1 means miss
     //now it's a pair of int and bool. true means its in the int index,
     //false means the int is where the oldest data point is. 
-    std::pair<int, bool> find(unsigned index, unsigned offset, unsigned tag);
+    std::pair<int, bool> find(unsigned index, unsigned tag);
     //get the index from the unsigned memory location
-    unsigned getIndex(unsigned memLoc, unsigned offsetBits, unsigned indexBits);
-    //get the offset from unsigned memory location
-    unsigned getOffset(unsigned memLoc, unsigned offsetBits);
+    unsigned getIndex(unsigned memLoc, unsigned indexBits);
     //get the tag from unsigned memory location
-    unsigned getTag(unsigned memLoc, unsigned offsetBits, unsigned indexBits);
+    unsigned getTag(unsigned memLoc);
     // perform the appropriate operation on a hit
-    void hit(unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate, std::string lruORFifo);
+    void hit(unsigned tag, unsigned index, std::string command, std::string writeThrough, std::string writeAllocate, std::string lruORFifo);
     // perform the appropriate operation on a miss
-    void miss(unsigned numBlocks, unsigned tag, unsigned index, unsigned offset, std::string command, std::string writeThrough, std::string writeAllocate);
-    void moveToBack(unsigned offset, unsigned index, unsigned tag);
+    void miss(unsigned numBlocks, unsigned tag, unsigned index, std::string command, std::string writeThrough, std::string writeAllocate);
+    void moveToBack(unsigned index, unsigned tag);
     
 };
 #endif
