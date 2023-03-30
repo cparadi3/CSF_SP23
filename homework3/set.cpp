@@ -30,7 +30,8 @@ unsigned Set::replace(unsigned index, Block value, unsigned numBytes, unsigned n
     //^^checking if our "move to front" heuristic works
     
         unsigned total_cycles = 0;
-        blockVector->push_back(value);
+        Block temp = Block(value);
+        blockVector->push_back(temp);
         if (blockVector->at(0).isDirty()) {
            total_cycles += 100 * (numBytes / 4);
         }
@@ -82,7 +83,7 @@ void Set::moveToBack(unsigned tag) {
     bool test = false; //debugging, delete later
     for (unsigned i = 0; i < (unsigned) blockVector->size(); i++) {
         if (blockVector->at(i).getData() == tag) {
-            blockVector->push_back(blockVector->at(i).getData());
+            blockVector->push_back(blockVector->at(i));
             blockVector->erase(blockVector->begin() + i);
             test = true; //debugging, delete later
             break;
