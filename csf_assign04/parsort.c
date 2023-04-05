@@ -52,13 +52,18 @@ int main(int argc, char **argv) {
   const char *filename = argv[1];
   char *end;
   size_t threshold = (size_t) strtoul(argv[2], &end, 10);
-  if (end != argv[2] + strlen(argv[2]))
-    /* TODO: report an error (threshold value is invalid) */;
-
+  if (end != argv[2] + strlen(argv[2])) {
+    fprintf(stderr, "Threshold value is invalid\n");
+    return 1;
+  }
   // TODO: open the file
-
+  FILE *fp = fopen(filename, "w");
+    if(fp == NULL) {
+      fprintf(stderr, "Could not open file: %s\n", filename);
+      return 1;
+  }
   // TODO: use fstat to determine the size of the file
-
+  
   // TODO: map the file into memory using mmap
 
   // TODO: sort the data!
@@ -66,4 +71,5 @@ int main(int argc, char **argv) {
   // TODO: unmap and close the file
 
   // TODO: exit with a 0 exit code if sort was successful
+  return 0;
 }
