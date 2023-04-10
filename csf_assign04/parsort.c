@@ -10,6 +10,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+int compare_i64(int64_t *left, int64_t *right) {
+  if(left > right) {
+    return 1;
+  }
+  else if(left < right) {
+    return -1;
+  }
+  return 0;
+}
 // Merge the elements in the sorted ranges [begin, mid) and [mid, end),
 // copying the result into temparr.
 void merge(int64_t *arr, size_t begin, size_t mid, size_t end, int64_t *temparr) {
@@ -28,9 +37,7 @@ void merge(int64_t *arr, size_t begin, size_t mid, size_t end, int64_t *temparr)
     else if (at_end_r)
       *dst++ = *left++;
     else {
-      //REMOVE!!!!
-      int cmp = left - right;
-      //int cmp = compare_i64(left, right);
+      int cmp = compare_i64(left, right);
       if (cmp <= 0)
         *dst++ = *left++;
       else
@@ -45,6 +52,7 @@ void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
   int64_t *temp;
   if (numElements < threshold) {
     //TODO: sequential sort algorithm
+
   }
   //delete later 
   if (numElements < 2) {
