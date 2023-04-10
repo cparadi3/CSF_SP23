@@ -11,10 +11,10 @@
 #include <string.h>
 
 int compare_i64(const void *left, const void *right) {
-  if((int64_t)left > (int64_t)right) {
+  if(*(int64_t*)left > *(int64_t*)right) {
     return 1;
   }
-  else if((int64_t)left < (int64_t)right) {
+  else if(*(int64_t*)left < *(int64_t*)right) {
     return -1;
   }
   return 0;
@@ -51,20 +51,18 @@ void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
   size_t numElements = end - begin;
   int64_t *temp;
   temp = malloc(numElements * sizeof(int64_t));
+  unsigned mid = (begin + end) / 2;
   if (numElements < threshold) {
     //TODO: sequential sort algorithm
+    qsort(arr, numElements, 8, compare_i64);
 
+  } else {
+    merge_sort(arr, begin, mid, threshold);
+    merge_sort(arr, mid, end, threshold);
   }
-  //delete later -  sort i think
-  if (numElements < 2) {
-    return;
-  }
-  unsigned mid = (begin + end) / 2;
-  merge_sort(arr, begin, mid, threshold);
-  merge_sort(arr, mid, end, threshold);
 
   merge(arr, begin, mid, end, temp);
-  memcpy(arr, temp, numElements);
+  //memcpy(arr, temp, numElements);
   free(temp);
 }
 
@@ -111,12 +109,9 @@ int main(int argc, char **argv) {
   size_t numItems = file_size_in_bytes / 8;
   printf(" %ld \n", numItems);
   printf(" %ld \n", data[0]);
-  //merge_sort(data, 0, numItems, threshold);
-  int64_t array[numItems];
-  memcpy(array, data, file_size_in_bytes);
-  qsort(array, numItems, 8, compare_i64);
-  memcpy(data, array, file_size_in_bytes);
-  // TODO: unmap and close the file
+  merge_sort(data, 0, numItems, threshold);
+  //memcpy(array, data, file_size_in_bytes);
+  //qsort(data, numItems, 8, compare_i64);
   munmap(data, file_size_in_bytes);
   // TODO: exit with a 0 exit code if sort was successful
   return 0;
