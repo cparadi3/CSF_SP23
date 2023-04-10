@@ -51,8 +51,8 @@ void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
     return;
   }
   unsigned mid = (begin + end) / 2;
-  merge_sort(arr, begin, mid, temp);
-  merge_sort(arr, mid, end, temp);
+  merge_sort(arr, begin, mid, threshold);
+  merge_sort(arr, mid, end, threshold);
 
   merge(arr, begin, mid, end, temp);
 }
@@ -97,7 +97,8 @@ int main(int argc, char **argv) {
     return 1;
   }
   // TODO: sort the data!
-  merge_sort(data, 0, sizeof(data),threshold);
+  size_t endIndex = file_size_in_bytes / 8;
+  merge_sort(data, 0, endIndex , threshold);
   // TODO: unmap and close the file
   munmap(data, file_size_in_bytes);
   // TODO: exit with a 0 exit code if sort was successful
