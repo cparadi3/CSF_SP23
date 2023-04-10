@@ -50,11 +50,12 @@ void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
   // TODO: implement
   size_t numElements = end - begin;
   int64_t *temp;
+  temp = malloc(numElements * sizeof(int64_t));
   if (numElements < threshold) {
     //TODO: sequential sort algorithm
 
   }
-  //delete later 
+  //delete later - sequential sort i think
   if (numElements < 2) {
     return;
   }
@@ -106,7 +107,9 @@ int main(int argc, char **argv) {
   }
   // TODO: sort the data!
   size_t endIndex = file_size_in_bytes / 8;
-  merge_sort(data, 0, endIndex , threshold);
+  printf(" %ld \n", endIndex);
+  printf(" %ld \n", data[0]);
+  merge_sort(data, 0, endIndex, threshold);
   // TODO: unmap and close the file
   munmap(data, file_size_in_bytes);
   // TODO: exit with a 0 exit code if sort was successful
