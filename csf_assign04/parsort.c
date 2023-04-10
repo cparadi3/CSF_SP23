@@ -39,6 +39,20 @@ void merge(int64_t *arr, size_t begin, size_t mid, size_t end, int64_t *temparr)
 
 void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
   // TODO: implement
+  size_t numElements = end - begin;
+
+  if (numElements < threshold) {
+    //TODO: sequential sort algorithm
+  }
+  //delete later 
+  if (numElements < 2) {
+    return;
+  }
+  unsigned mid = (begin + end) / 2;
+  merge_sort(arr, begin, mid, temp);
+  merge_sort(arr, mid, end, temp);
+
+  merge(arr, begin, mid, end, temp);
 }
 
 int main(int argc, char **argv) {
