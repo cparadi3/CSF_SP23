@@ -28,7 +28,9 @@ void merge(int64_t *arr, size_t begin, size_t mid, size_t end, int64_t *temparr)
     else if (at_end_r)
       *dst++ = *left++;
     else {
-      int cmp = compare_i64(left, right);
+      //REMOVE!!!!
+      int cmp = left - right;
+      //int cmp = compare_i64(left, right);
       if (cmp <= 0)
         *dst++ = *left++;
       else
@@ -40,7 +42,7 @@ void merge(int64_t *arr, size_t begin, size_t mid, size_t end, int64_t *temparr)
 void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
   // TODO: implement
   size_t numElements = end - begin;
-
+  int64_t *temp;
   if (numElements < threshold) {
     //TODO: sequential sort algorithm
   }
@@ -71,19 +73,33 @@ int main(int argc, char **argv) {
     return 1;
   }
   // TODO: open the file
-  FILE *fp = fopen(filename, "w");
-    if(fp == NULL) {
-      fprintf(stderr, "Could not open file: %s\n", filename);
-      return 1;
+  int fd = open(filename, O_RDWR);
+  if (fd < 0) {
+    fprintf(stderr, "Could not open file: %s\n", filename);
+    return 1;
   }
   // TODO: use fstat to determine the size of the file
+  struct stat statbuf;
+  int rc = fstat(fd, &statbuf);
+  if (rc != 0) {
+    // handle fstat error and exit
+    fprintf(stderr, "fstat failed\n");
+    return 1;
+  }
+  size_t file_size_in_bytes = statbuf.st_size;
   
   // TODO: map the file into memory using mmap
-
+  int64_t *data = mmap(NULL, file_size_in_bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  close(fd);
+  if (data == MAP_FAILED) {
+    // handle mmap error and exit
+    fprintf(stderr, "Failed to mmap the file data\n");
+    return 1;
+  }
   // TODO: sort the data!
-
+  merge_sort(data, 0, sizeof(data),threshold);
   // TODO: unmap and close the file
-
+  munmap(data, file_size_in_bytes);
   // TODO: exit with a 0 exit code if sort was successful
   return 0;
 }
