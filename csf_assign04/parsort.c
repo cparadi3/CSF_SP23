@@ -73,6 +73,17 @@ void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
       fprintf(stderr, "Child process failed to execute\n");
       exit(1);
     }
+    if (!WIFEXITED(wstatus)) {
+    // subprocess crashed, was interrupted, or did not exit normally
+    fprintf(stderr, "Child process crashed, was interrupted, or did not exit correctly");
+    exit(1);
+  } 
+  if (WEXITSTATUS(wstatus) != 0) {
+    // subprocess returned a non-zero exit code
+    fprintf(stderr, "Child process returned a non-zero exit code");
+    exit(1);
+    // if following standard UNIX conventions, this is also an error
+  }
     }
   
   pid_t pid2 = fork();
@@ -87,6 +98,17 @@ void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
       fprintf(stderr, "Child process failed to execute\n");
       exit(1);
     }
+    if (!WIFEXITED(wstatus)) {
+    // subprocess crashed, was interrupted, or did not exit normally
+    fprintf(stderr, "Child process crashed, was interrupted, or did not exit correctly");
+    exit(1);
+  } 
+  if (WEXITSTATUS(wstatus) != 0) {
+    // subprocess returned a non-zero exit code
+    fprintf(stderr, "Child process returned a non-zero exit code");
+    exit(1);
+    // if following standard UNIX conventions, this is also an error
+  }
   }
 
   if (pid1 > 0 && pid2 > 0) {
