@@ -1,9 +1,47 @@
-CONTRIBUTIONS
+JHED: cparadi3 jzahner4
+Names: CJ Paradis Joe Zahner
 
-TODO: write a brief summary of how each team member contributed to
-the project.
+CONTRIBUTIONS
+Both members contributed equally.
 
 REPORT
+Test run with threshold 2097152
 
-TODO: add your report according to the instructions in the
-"Experiments and analysis" section of the assignment description.
+real    0m0.355s
+user    0m0.340s
+sys     0m0.013s
+Test run with threshold 1048576
+
+real    0m0.222s
+user    0m0.362s
+sys     0m0.031s
+Test run with threshold 524288
+
+real    0m0.187s
+user    0m0.414s
+sys     0m0.044s
+Test run with threshold 262144
+
+real    0m0.163s
+user    0m0.512s
+sys     0m0.067s
+Test run with threshold 131072
+
+real    0m0.147s
+user    0m0.510s
+sys     0m0.077s
+Test run with threshold 65536
+
+real    0m0.138s
+user    0m0.524s
+sys     0m0.094s
+Test run with threshold 32768
+
+real    0m0.184s
+user    0m0.572s
+sys     0m0.142s
+Test run with threshold 16384
+
+real    0m0.163s
+user    0m0.605s
+sys     0m0.216s

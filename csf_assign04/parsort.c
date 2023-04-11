@@ -61,55 +61,57 @@ void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
     pid_t pid1 = fork();
     //If fork fails
     if(pid1 < 0) {
-      fprintf(stderr, "Child process failed to execute\n");
+      fprintf(stderr, "Error: Child process failed to execute\n");
        exit(1);
     } else if (pid1 == 0) {
       merge_sort(arr, begin, mid, threshold);
-      exit(0);
+      exit(pid1);
     }
-    else {
-      pid_t actual_pid = waitpid(pid1, &wstatus,0);
-      if(actual_pid == -1) {
-      fprintf(stderr, "Child process failed to execute\n");
-      exit(1);
-    }
-    if (!WIFEXITED(wstatus)) {
-    // subprocess crashed, was interrupted, or did not exit normally
-    fprintf(stderr, "Child process crashed, was interrupted, or did not exit correctly");
-    exit(1);
-  } 
-  if (WEXITSTATUS(wstatus) != 0) {
-    // subprocess returned a non-zero exit code
-    fprintf(stderr, "Child process returned a non-zero exit code");
-    exit(1);
-    // if following standard UNIX conventions, this is also an error
-  }
-    }
-  
-  pid_t pid2 = fork();
+     pid_t pid2 = fork();
   if(pid2 < 0) {
-    fprintf(stderr, "Child process failed to execute\n");
+    fprintf(stderr, "Error: Child process failed to execute\n");
     exit(1);
   } else if (pid2 == 0) {
         merge_sort(arr, mid, end, threshold);
-  } else {
-    pid_t actual_pid = waitpid(pid2, &wstatus,0);
-    if(actual_pid == -1) {
-      fprintf(stderr, "Child process failed to execute\n");
+        exit(pid2);
+  } 
+    //else {
+      pid_t actual_pid = waitpid(pid1, &wstatus,0);
+      if(actual_pid == -1) {
+      fprintf(stderr, "Error: Child process failed to execute\n");
       exit(1);
     }
     if (!WIFEXITED(wstatus)) {
     // subprocess crashed, was interrupted, or did not exit normally
-    fprintf(stderr, "Child process crashed, was interrupted, or did not exit correctly");
+    fprintf(stderr, "Error: Child process crashed, was interrupted, or did not exit correctly");
     exit(1);
   } 
   if (WEXITSTATUS(wstatus) != 0) {
     // subprocess returned a non-zero exit code
-    fprintf(stderr, "Child process returned a non-zero exit code");
+    fprintf(stderr, "Error: Child process returned a non-zero exit code");
     exit(1);
     // if following standard UNIX conventions, this is also an error
   }
+   // }
+  
+ //else {
+    actual_pid = waitpid(pid2, &wstatus,0);
+    if(actual_pid == -1) {
+      fprintf(stderr, "Error: Child process failed to execute\n");
+      exit(1);
+    }
+    if (!WIFEXITED(wstatus)) {
+    // subprocess crashed, was interrupted, or did not exit normally
+    fprintf(stderr, "Error: Child process crashed, was interrupted, or did not exit correctly");
+    exit(1);
+  } 
+  if (WEXITSTATUS(wstatus) != 0) {
+    // subprocess returned a non-zero exit code
+    fprintf(stderr, "Error: Child process returned a non-zero exit code");
+    exit(1);
+    // if following standard UNIX conventions, this is also an error
   }
+  //}
 
   if (pid1 > 0 && pid2 > 0) {
     int64_t *temp;
@@ -132,13 +134,13 @@ int main(int argc, char **argv) {
   char *end;
   size_t threshold = (size_t) strtoul(argv[2], &end, 10);
   if (end != argv[2] + strlen(argv[2])) {
-    fprintf(stderr, "Threshold value is invalid\n");
+    fprintf(stderr, "Error: Threshold value is invalid\n");
     return 1;
   }
   // TODO: open the file
   int fd = open(filename, O_RDWR);
   if (fd < 0) {
-    fprintf(stderr, "Could not open file: %s\n", filename);
+    fprintf(stderr, "Error: Could not open file: %s\n", filename);
     return 1;
   }
   // TODO: use fstat to determine the size of the file
@@ -146,7 +148,7 @@ int main(int argc, char **argv) {
   int rc = fstat(fd, &statbuf);
   if (rc != 0) {
     // handle fstat error and exit
-    fprintf(stderr, "fstat failed\n");
+    fprintf(stderr, "Error: fstat failed\n");
     return 1;
   }
   size_t file_size_in_bytes = statbuf.st_size;
@@ -156,7 +158,7 @@ int main(int argc, char **argv) {
   close(fd);
   if (data == MAP_FAILED) {
     // handle mmap error and exit
-    fprintf(stderr, "Failed to mmap the file data\n");
+    fprintf(stderr, "Error: Failed to mmap the file data\n");
     return 1;
   }
   // TODO: sort the data!
@@ -167,7 +169,7 @@ int main(int argc, char **argv) {
   munmap(data, file_size_in_bytes);
   if (data == MAP_FAILED) {
     // handle mmap error and exit
-    fprintf(stderr, "Failed to munmap the file data\n");
+    fprintf(stderr, "Error: Failed to munmap the file data\n");
     return 1;
   }
   // TODO: exit with a 0 exit code if sort was successful
