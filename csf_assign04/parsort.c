@@ -49,12 +49,10 @@ void merge(int64_t *arr, size_t begin, size_t mid, size_t end, int64_t *temparr)
 }
 
 void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
-  // TODO: implement
   size_t numElements = end - begin;
   unsigned mid = begin + (numElements / 2);
   int wstatus;
   if (numElements <= threshold) {
-    //TODO: sequential sort algorithm
     qsort(arr + begin, numElements, sizeof(int64_t), compare_i64);
 
   } else {
@@ -75,7 +73,6 @@ void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
         merge_sort(arr, mid, end, threshold);
         exit(pid2);
   } 
-    //else {
       pid_t actual_pid = waitpid(pid1, &wstatus,0);
       if(actual_pid == -1) {
       fprintf(stderr, "Error: Child process failed to execute\n");
@@ -92,9 +89,7 @@ void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
     exit(1);
     // if following standard UNIX conventions, this is also an error
   }
-   // }
   
- //else {
     actual_pid = waitpid(pid2, &wstatus,0);
     if(actual_pid == -1) {
       fprintf(stderr, "Error: Child process failed to execute\n");
@@ -111,7 +106,7 @@ void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
     exit(1);
     // if following standard UNIX conventions, this is also an error
   }
-  //}
+
 
   if (pid1 > 0 && pid2 > 0) {
     int64_t *temp;
@@ -137,13 +132,13 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Error: Threshold value is invalid\n");
     return 1;
   }
-  // TODO: open the file
+  // open the file
   int fd = open(filename, O_RDWR);
   if (fd < 0) {
     fprintf(stderr, "Error: Could not open file: %s\n", filename);
     return 1;
   }
-  // TODO: use fstat to determine the size of the file
+  // use fstat to determine the size of the file
   struct stat statbuf;
   int rc = fstat(fd, &statbuf);
   if (rc != 0) {
@@ -153,7 +148,7 @@ int main(int argc, char **argv) {
   }
   size_t file_size_in_bytes = statbuf.st_size;
   
-  // TODO: map the file into memory using mmap
+  // map the file into memory using mmap
   int64_t *data = mmap(NULL, file_size_in_bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   close(fd);
   if (data == MAP_FAILED) {
@@ -161,17 +156,15 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Error: Failed to mmap the file data\n");
     return 1;
   }
-  // TODO: sort the data!
+  // sort the data!
   size_t numItems = file_size_in_bytes / 8;
   merge_sort(data, 0, numItems, threshold);
-  //memcpy(array, data, file_size_in_bytes);
-  //qsort(data, numItems, 8, compare_i64);
   munmap(data, file_size_in_bytes);
   if (data == MAP_FAILED) {
     // handle mmap error and exit
     fprintf(stderr, "Error: Failed to munmap the file data\n");
     return 1;
   }
-  // TODO: exit with a 0 exit code if sort was successful
+  // exit with a 0 exit code if sort was successful
   return 0;
 }
