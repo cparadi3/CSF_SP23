@@ -49,21 +49,21 @@ void merge(int64_t *arr, size_t begin, size_t mid, size_t end, int64_t *temparr)
 void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
   // TODO: implement
   size_t numElements = end - begin;
-  unsigned mid = (begin + end) / 2;
-  if (numElements < threshold) {
+  unsigned mid = begin + (numElements / 2);
+  if (numElements <= threshold) {
     //TODO: sequential sort algorithm
-    qsort(arr + begin, numElements, 8, compare_i64);
+    qsort(arr + begin, numElements, sizeof(int64_t), compare_i64);
 
   } else {
     merge_sort(arr, begin, mid, threshold);
     merge_sort(arr, mid, end, threshold);
+      int64_t *temp;
+      temp = malloc(numElements * sizeof(int64_t));
+      //memcpy(temp + begin, arr + begin, numElements);
+      merge(arr, begin, mid, end, temp);
+      memcpy(arr + begin, temp, numElements * sizeof(int64_t));
+      free(temp);
   }
-  int64_t *temp;
-  temp = malloc(numElements * sizeof(int64_t));
-  //memcpy(temp + begin, arr + begin, numElements);
-  merge(arr, begin, mid, end, temp);
-  memcpy(arr + begin, temp + begin, numElements);
-  free(temp);
 }
 
 int main(int argc, char **argv) {
