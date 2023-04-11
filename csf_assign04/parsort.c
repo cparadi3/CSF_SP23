@@ -19,6 +19,8 @@ int compare_i64(const void *left, const void *right) {
   }
   return 0;
 }
+
+
 // Merge the elements in the sorted ranges [begin, mid) and [mid, end),
 // copying the result into temparr.
 void merge(int64_t *arr, size_t begin, size_t mid, size_t end, int64_t *temparr) {
@@ -50,22 +52,52 @@ void merge_sort(int64_t *arr, size_t begin, size_t end, size_t threshold) {
   // TODO: implement
   size_t numElements = end - begin;
   unsigned mid = begin + (numElements / 2);
+  int wstatus;
   if (numElements <= threshold) {
     //TODO: sequential sort algorithm
     qsort(arr + begin, numElements, sizeof(int64_t), compare_i64);
 
   } else {
-    merge_sort(arr, begin, mid, threshold);
-    merge_sort(arr, mid, end, threshold);
-      int64_t *temp;
-      temp = malloc(numElements * sizeof(int64_t));
-      //memcpy(temp + begin, arr + begin, numElements);
-      merge(arr, begin, mid, end, temp);
-      memcpy(arr + begin, temp, numElements * sizeof(int64_t));
-      free(temp);
+    pid_t pid1 = fork();
+    //If fork fails
+    if(pid1 < 0) {
+      fprintf(stderr, "Child process failed to execute\n");
+       exit(1);
+    } else if (pid1 == 0) {
+      merge_sort(arr, begin, mid, threshold);
+      exit(0);
+    }
+    else {
+      pid_t actual_pid = waitpid(pid1, &wstatus,0);
+      if(actual_pid == -1) {
+      fprintf(stderr, "Child process failed to execute\n");
+      exit(1);
+    }
+    }
+  
+  pid_t pid2 = fork();
+  if(pid2 < 0) {
+    fprintf(stderr, "Child process failed to execute\n");
+    exit(1);
+  } else if (pid2 == 0) {
+        merge_sort(arr, mid, end, threshold);
+  } else {
+    pid_t actual_pid = waitpid(pid2, &wstatus,0);
+    if(actual_pid == -1) {
+      fprintf(stderr, "Child process failed to execute\n");
+      exit(1);
+    }
+  }
+
+  if (pid1 > 0 && pid2 > 0) {
+    int64_t *temp;
+    temp = malloc(numElements * sizeof(int64_t));
+    merge(arr, begin, mid, end, temp);
+    memcpy(arr + begin, temp, numElements * sizeof(int64_t));
+    free(temp);
   }
 }
-
+}
 int main(int argc, char **argv) {
   // check for correct number of command line arguments
   if (argc != 3) {
@@ -107,12 +139,15 @@ int main(int argc, char **argv) {
   }
   // TODO: sort the data!
   size_t numItems = file_size_in_bytes / 8;
-  printf(" %ld \n", numItems);
-  printf(" %ld \n", data[0]);
   merge_sort(data, 0, numItems, threshold);
   //memcpy(array, data, file_size_in_bytes);
   //qsort(data, numItems, 8, compare_i64);
   munmap(data, file_size_in_bytes);
+  if (data == MAP_FAILED) {
+    // handle mmap error and exit
+    fprintf(stderr, "Failed to munmap the file data\n");
+    return 1;
+  }
   // TODO: exit with a 0 exit code if sort was successful
   return 0;
 }
