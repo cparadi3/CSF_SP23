@@ -18,7 +18,11 @@ Connection::Connection(int fd)
 
 void Connection::connect(const std::string &hostname, int port) {
   // TODO: call open_clientfd to connect to the server
+  const char portNum = port;
+  const char* hostName = hostname.c_str();
+  m_fd = open_clientfd(hostName, &portNum);
   // TODO: call rio_readinitb to initialize the rio_t object
+  rio_readinitb(&(this->m_fdbuf), m_fd);
 }
 
 Connection::~Connection() {
@@ -37,6 +41,14 @@ bool Connection::send(const Message &msg) {
   // TODO: send a message
   // return true if successful, false if not
   // make sure that m_last_result is set appropriately
+  
+  //Might need to add check for propery formatted room name and username
+  if(rio_writen(m_fd, msg.data.c_str(), sizeof(msg.data)) != sizeof(msg.data)) {
+    m_last_result = EOF_OR_ERROR;
+    return false;
+  } else {
+    return true;
+  }
 }
 
 bool Connection::receive(Message &msg) {
