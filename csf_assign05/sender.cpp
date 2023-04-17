@@ -21,12 +21,47 @@ int main(int argc, char **argv) {
   server_port = std::stoi(argv[2]);
   username = argv[3];
 
+  Connection conn;
+
   // TODO: connect to server
+  conn.connect(server_hostname, server_port);
+  if(!conn.is_open()) {
+    std::cerr << "Could not connect" << std::endl;
+    return 1;
+  }
 
   // TODO: send slogin message
-
+  Message msg = Message(TAG_SLOGIN, username);
+  conn.send(msg);
+  if(conn.receive(msg) == false) {
+    std::cerr << "Login failed\n";
+    return 1;
+  }
   // TODO: loop reading commands from user, sending messages to
   //       server as appropriate
+  while(1) {
+    std::string input;
+    std::cin >> input;
+    if(input.compare(0, 6, "/join ") == 0) {
+      std::string room_name = input.substr(6, std::string::npos);
+      Message msg = Message(TAG_JOIN, room_name);
+      conn.send(msg);
+      if(conn.receive(msg) == false) {
+         std::cerr << "Could not join room\n";
+          return 1;
+        }
+    }
+
+    if(input.compare(0, 6, "/leave")) {
+      Message msg = Message(TAG_LEAVE, "yeet");
+    }
+
+    if(input.compare(0, 5, "/quit")) {
+      Message msg = Message(TAG_QUIT, "yaga");
+    }
+    
+
+  }
 
   return 0;
 }

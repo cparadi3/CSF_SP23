@@ -44,7 +44,11 @@ int main(int argc, char **argv) {
   while(1) {
     conn.receive(msg);
     if(msg.tag == TAG_DELIVERY) {
-      std::cout << msg.data + "\n";
+      //TODO: make this its own function?
+      std::string output;
+      //get the part right after the first colon
+      output = msg.data.substr(msg.data.find_first_of(":", 0) + 1, std::string::npos);
+      std::cout << output + "\n";
     }
     else if (msg.tag == TAG_ERR) {
       std::cerr << "Failed to receive message" << std::endl;
