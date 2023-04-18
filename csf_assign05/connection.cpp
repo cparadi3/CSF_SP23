@@ -1,6 +1,7 @@
 #include <sstream>
 #include <cctype>
 #include <cassert>
+#include <iostream>
 #include "csapp.h"
 #include "message.h"
 #include "connection.h"
@@ -77,7 +78,7 @@ bool Connection::send(const Message &msg) {
   }
   else if ((size_t) writeCheck != message.length()) {
     m_last_result = INVALID_MSG;
-    return false; 
+    return false;  
   }
   else if (writeCheck == 0) {
     m_last_result = EOF_OR_ERROR;
@@ -94,7 +95,7 @@ bool Connection::receive(Message &msg) {
   // return true if successful, false if not
   // make sure that m_last_result is set appropriately
   char buffer[msg.MAX_LEN];
-  int readCheck = rio_readlineb(&m_fdbuf, buffer, msg.MAX_LEN);
+  ssize_t readCheck = rio_readlineb(&m_fdbuf, buffer, msg.MAX_LEN);
   //fix this - what do you mean by trim?
   std::stringstream ss(trim_1(buffer));
   //std::stringstream ss(buffer);
@@ -102,10 +103,13 @@ bool Connection::receive(Message &msg) {
   std::getline(ss, msg.data);
   if(readCheck == -1) {
     m_last_result = INVALID_MSG;
+    std::cerr << "negative readcheck" << std::endl; //delete later
     return false;
+  
   }
   else if (readCheck == 0) {
     m_last_result = EOF_OR_ERROR;
+    std::cerr << "zero readcheck" << std::endl; //delete later
     return false;
   }
   else {

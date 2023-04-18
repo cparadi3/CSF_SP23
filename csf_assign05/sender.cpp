@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
   Message msg = Message(TAG_SLOGIN, username);
   conn.send(msg);
   if(conn.receive(msg) == false) {
-    std::cerr << msg.data << std::endl;
+    std::cerr << msg.data + "slogin failed" << std::endl;
     return 1;
   }
   // TODO: loop reading commands from user, sending messages to
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
       Message msg = Message(TAG_JOIN, room_name);
       conn.send(msg);
       if(conn.receive(msg) == false) {
-         std::cerr << msg.data << std::endl;
+         std::cerr << msg.data  + "test" << std::endl;
         }
     }
     //Join room here after
@@ -63,14 +63,14 @@ int main(int argc, char **argv) {
       if(msg.tag.compare(0, std::string::npos, TAG_OK) == 0) {//wait for recieve back
           return 0;
       } else {
-        std::cerr << msg.data << std::endl;
+        std::cerr << msg.data + "shouldn't happen" << std::endl;
       }
     }
     else {
       Message msg = Message(TAG_SENDALL, input);
       conn.send(msg);
       if (conn.receive(msg) == false) {
-        std::cerr << msg.data << std::endl;
+        std::cerr << msg.data + "passed through wrongly" << std::endl;
       }
     }
     
