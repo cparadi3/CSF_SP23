@@ -31,13 +31,13 @@ int main(int argc, char **argv) {
   Message msg = Message(TAG_RLOGIN, username);
   conn.send(msg);
   if(conn.receive(msg) == false) {
-    std::cerr << "Login failed" << std::endl;
+    std::cerr << msg.data << std::endl;
     return 1;
   }
   msg = Message(TAG_JOIN, room_name);
   conn.send(msg);
   if(conn.receive(msg) == false) {
-    std::cerr << "Could not join room" << std::endl;
+    std::cerr << msg.data << std::endl;
     return 1;
   }
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
       std::cout << output + "\n";
     }
     else if (msg.tag == TAG_ERR) {
-      std::cerr << "Failed to receive message" << std::endl;
+      std::cerr << msg.data << std::endl;
       return 1;
     }
     //print message
@@ -59,6 +59,7 @@ int main(int argc, char **argv) {
   }
   // TODO: loop waiting for messages from server
   //       (which should be tagged with TAG_DELIVERY)
+
 
 
 
