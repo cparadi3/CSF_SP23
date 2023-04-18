@@ -34,11 +34,18 @@ int main(int argc, char **argv) {
     std::cerr << msg.data << std::endl;
     return 1;
   }
+  else if (msg.tag != TAG_OK) {
+    std::cerr << msg.data << std::endl;
+    return 1;  //might not be necessary
+  }
   msg = Message(TAG_JOIN, room_name);
   conn.send(msg);
   if(conn.receive(msg) == false) {
     std::cerr << msg.data << std::endl;
     return 1;
+  } else if (msg.tag != TAG_OK) {
+    std::cerr << msg.data << std::endl;
+    return 1;  //check
   }
 
   while(1) {
@@ -46,9 +53,14 @@ int main(int argc, char **argv) {
     if(msg.tag == TAG_DELIVERY) {
       //TODO: make this its own function?
       std::string output;
+      std::string username;
+      std::string message;
       //get the part right after the first colon
       output = msg.data.substr(msg.data.find_first_of(":", 0) + 1, std::string::npos);
-      std::cout << output + "\n";
+      username = output.substr(0, output.find_first_of(":", 0));
+      message = output.substr(output.find_first_of(":", 0) + 1, std::string::npos);
+      std::cout << username << ": " << message + "\n";
+      //std::cout << output + "\n";
     }
     else if (msg.tag == TAG_ERR) {
       std::cerr << msg.data << std::endl;

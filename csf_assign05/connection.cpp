@@ -70,10 +70,14 @@ bool Connection::send(const Message &msg) {
   // make sure that m_last_result is set appropriately
   std::string message = msg.tag + ":" + msg.data + "\n";
   //Might need to add check for propery formatted room name and username
-  int writeCheck = rio_writen(m_fd, message.c_str(), message.length());
+  ssize_t writeCheck = rio_writen(m_fd, message.c_str(), message.length());
   if(writeCheck == -1) {
     m_last_result = INVALID_MSG;
     return false;
+  }
+  else if ((size_t) writeCheck != message.length()) {
+    m_last_result = INVALID_MSG;
+    return false; 
   }
   else if (writeCheck == 0) {
     m_last_result = EOF_OR_ERROR;
@@ -90,7 +94,7 @@ bool Connection::receive(Message &msg) {
   // return true if successful, false if not
   // make sure that m_last_result is set appropriately
   char buffer[msg.MAX_LEN];
-  int readCheck = rio_readlineb(&m_fdbuf, buffer,msg.MAX_LEN);
+  int readCheck = rio_readlineb(&m_fdbuf, buffer, msg.MAX_LEN);
   //fix this - what do you mean by trim?
   std::stringstream ss(trim_1(buffer));
   //std::stringstream ss(buffer);
