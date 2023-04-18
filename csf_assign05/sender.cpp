@@ -48,18 +48,26 @@ int main(int argc, char **argv) {
       conn.send(msg);
       if(conn.receive(msg) == false) {
          std::cerr << "Could not join room\n";
-          return 1;
         }
     }
     //Join room here after
-    if(input.compare(0, 6, "/leave")) {
-      Message msg = Message(TAG_LEAVE, "yeet");
+    else if(input.compare(0, 6, "/leave")) {
+      Message msg = Message(TAG_LEAVE, "Leaving");
       
     }
 
-    if(input.compare(0, 5, "/quit")) {
-      Message msg = Message(TAG_QUIT, "yaga");
-      return 1;
+    else if(input.compare(0, 5, "/quit")) {
+      Message msg = Message(TAG_QUIT, "Quitting");
+      if(msg.tag.compare(0, std::string::npos, TAG_OK) == 0) {//wait for recieve back
+          return 0;
+      }
+    }
+    else {
+      Message msg = Message(TAG_SENDALL, input);
+      conn.send(msg);
+      if (conn.recieve(msg) == false) {
+        std::cerr << "Message send failure\n";
+      }
     }
     
 
