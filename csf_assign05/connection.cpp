@@ -6,6 +6,22 @@
 #include "connection.h"
 #include "client_util.h"
 
+const std::string WHITESPACE = " \n\r\t\f\v";
+
+std::string ltrim_1(const std::string &s) {
+  size_t start = s.find_first_not_of(WHITESPACE);
+  return (start == std::string::npos) ? "" : s.substr(start);
+}
+ 
+std::string rtrim_1(const std::string &s) {
+  size_t end = s.find_last_not_of(WHITESPACE);
+  return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+ 
+std::string trim_1(const std::string &s) {
+  return rtrim_1(ltrim_1(s));
+}
+
 Connection::Connection()
   : m_fd(-1)
   , m_last_result(SUCCESS) {
@@ -76,7 +92,7 @@ bool Connection::receive(Message &msg) {
   char buffer[msg.MAX_LEN];
   int readCheck = rio_readlineb(&m_fdbuf, buffer,msg.MAX_LEN);
   //fix this - what do you mean by trim?
-  std::stringstream ss(trim(buffer));
+  std::stringstream ss(trim_1(buffer));
   //std::stringstream ss(buffer);
   std::getline(ss, msg.tag, ':');
   std::getline(ss, msg.data);
