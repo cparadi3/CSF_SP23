@@ -51,13 +51,15 @@ int main(int argc, char **argv) {
           return 1;
         }
     }
-
+    //Join room here after
     if(input.compare(0, 6, "/leave")) {
       Message msg = Message(TAG_LEAVE, "yeet");
+      
     }
 
     if(input.compare(0, 5, "/quit")) {
       Message msg = Message(TAG_QUIT, "yaga");
+      return 1;
     }
     
 

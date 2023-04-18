@@ -76,8 +76,8 @@ bool Connection::receive(Message &msg) {
   char buffer[msg.MAX_LEN];
   int readCheck = rio_readlineb(&m_fdbuf, buffer,msg.MAX_LEN);
   //fix this - what do you mean by trim?
-  //std::stringstream ss(trim(buffer));
-  std::stringstream ss(buffer);
+  std::stringstream ss(trim(buffer));
+  //std::stringstream ss(buffer);
   std::getline(ss, msg.tag, ':');
   std::getline(ss, msg.data);
   if(readCheck == -1) {
