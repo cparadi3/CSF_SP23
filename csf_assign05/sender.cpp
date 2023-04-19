@@ -29,23 +29,12 @@ int main(int argc, char **argv) {
     std::cerr << "Could not connect" << std::endl;
     return 1;
   }
+  //REMOVE
   std::cerr << TAG_SLOGIN << std::endl;
   //do rlogin first maybe?
-  Message msg = Message(TAG_RLOGIN, username);
-  if (conn.send(msg) == false) {
-    std::cerr << "send failed" << std::endl;
-  }
-  if(conn.receive(msg) == false) {
-    std::cerr << msg.tag + msg.data + " rlogin failed" << std::endl;
-    return 1;
-  }
-  else if (msg.tag != TAG_OK) {
-    std::cerr << msg.data << std::endl;
-    return 1;  //might not be necessary
-  }
+  Message msg;
   // TODO: send slogin message
-  msg = Message(TAG_SLOGIN, username);
-  if(conn.send(msg) == false) {
+  if(conn.send(Message(TAG_SLOGIN, username)) == false) {
     std::cerr << "send failed" << std::endl;
   }
   if(conn.receive(msg) == false) {
