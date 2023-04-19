@@ -32,6 +32,7 @@ Connection::Connection(int fd)
   : m_fd(fd)
   , m_last_result(SUCCESS) {
   // TODO: call rio_readinitb to initialize the rio_t object
+  rio_readinitb(&m_fdbuf, m_fd);
 }
 
 void Connection::connect(const std::string &hostname, int port) {
@@ -40,7 +41,9 @@ void Connection::connect(const std::string &hostname, int port) {
   const char* hostName = hostname.c_str();
   m_fd = open_clientfd(hostName, portNum.c_str());
   // TODO: call rio_readinitb to initialize the rio_t object
-  rio_readinitb(&m_fdbuf, m_fd);
+  if (m_fd >= 0) {
+    rio_readinitb(&m_fdbuf, m_fd);
+  }
 }
 
 Connection::~Connection() {
@@ -69,6 +72,7 @@ bool Connection::send(const Message &msg) {
   // TODO: send a message
   // return true if successful, false if not
   // make sure that m_last_result is set appropriately
+  std::string dataTrim = trim_1(msg.data);
   std::string message = msg.tag + ":" + msg.data + "\n";
   //Might need to add check for propery formatted room name and username
   ssize_t writeCheck = rio_writen(m_fd, message.c_str(), message.length());
@@ -94,11 +98,11 @@ bool Connection::receive(Message &msg) {
   // TODO: receive a message, storing its tag and data in msg
   // return true if successful, false if not
   // make sure that m_last_result is set appropriately
-  char buffer[msg.MAX_LEN];
-  ssize_t readCheck = rio_readlineb(&m_fdbuf, buffer, msg.MAX_LEN);
+  char buffer[msg.MAX_LEN + 1];
+  ssize_t readCheck = rio_readlineb(&m_fdbuf, buffer, msg.MAX_LEN + 1);
   //fix this - what do you mean by trim?
-  std::stringstream ss(trim_1(buffer));
-  //std::stringstream ss(buffer);
+  //std::stringstream ss(trim_1(buffer));
+  std::stringstream ss(buffer);
   std::getline(ss, msg.tag, ':');
   std::getline(ss, msg.data);
   if(readCheck == -1) {
