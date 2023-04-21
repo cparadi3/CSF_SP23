@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
   //       server as appropriate
   while(1) {
     std::string input;
-    std::cin >> input;
+    std::getline(std::cin, input);
     if(input.compare(0, 6, "/join ") == 0) {
       std::string room_name = input.substr(6, std::string::npos);
       Message msg = Message(TAG_JOIN, room_name);
@@ -72,8 +72,10 @@ int main(int argc, char **argv) {
     else if(input.compare(0, 5, "/quit") == 0) {
       Message msg = Message(TAG_QUIT, "Quitting");
       conn.send(msg);
+      conn.receive(msg);
       if(msg.tag.compare(0, std::string::npos, TAG_OK) == 0) {//wait for recieve back
-          return 0;
+        conn.close();
+        return 0;
       } else {
         std::cerr << msg.data + "shouldn't happen" << std::endl;
       }
