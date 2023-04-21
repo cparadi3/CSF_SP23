@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     std::cerr << "send failed" << std::endl;
   }
   if(conn.receive(msg) == false) {
-    std::cerr << msg.tag << ": " << msg.data + " slogin failed" << std::endl;
+    std::cerr << msg.data << std::endl;
     conn.close();
     return 1;
   } else if (msg.tag != TAG_OK) {
@@ -91,6 +91,9 @@ int main(int argc, char **argv) {
       conn.send(msg);
       if (conn.receive(msg) == false) {
         std::cerr << msg.data << std::endl;
+      }
+      if(msg.tag.compare(0, std::string::npos, TAG_OK) != 0) {//wait for recieve back
+        std::cerr << msg.data  << std::endl;
       }
     }
     
