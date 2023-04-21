@@ -66,7 +66,13 @@ int main(int argc, char **argv) {
     else if(input.compare(0, 6, "/leave") == 0) {
       Message msg = Message(TAG_LEAVE, "Leaving");
       conn.send(msg);
-      
+      if (!conn.receive(msg)) {
+        std::cerr << msg.data + " couldn't receive msg" << std::endl;
+      }
+      if(msg.tag.compare(0, std::string::npos, TAG_OK) != 0) {//wait for recieve back
+        std::cerr << msg.data + "shouldn't happen" << std::endl;
+      }
+
     }
 
     else if(input.compare(0, 5, "/quit") == 0) {
