@@ -32,14 +32,19 @@ int main(int argc, char **argv) {
   //REMOVE
   std::cerr << TAG_SLOGIN << std::endl;
   //do rlogin first maybe?
-  Message msg;
+  Message msg = Message(TAG_SLOGIN, username);
   // TODO: send slogin message
-  if(conn.send(Message(TAG_SLOGIN, username)) == false) {
+  if(conn.send(msg) == false) {
     std::cerr << "send failed" << std::endl;
   }
   if(conn.receive(msg) == false) {
-    std::cerr << msg.data + " slogin failed" << std::endl;
+    std::cerr << msg.tag << ": " << msg.data + " slogin failed" << std::endl;
+    conn.close();
     return 1;
+  } else if (msg.tag != TAG_OK) {
+    std::cerr << msg.data << std::endl;
+    conn.close();
+    return 1;  //check
   }
   // TODO: loop reading commands from user, sending messages to
   //       server as appropriate
@@ -52,7 +57,10 @@ int main(int argc, char **argv) {
       conn.send(msg);
       if(conn.receive(msg) == false) {
          std::cerr << msg.data  + "test" << std::endl;
-        }
+      } 
+      else if (msg.tag != TAG_OK) {
+        std::cerr << msg.data << std::endl;  //check
+      }
     }
     //Join room here after
     else if(input.compare(0, 6, "/leave") == 0) {

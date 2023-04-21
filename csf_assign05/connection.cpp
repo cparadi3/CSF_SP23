@@ -53,7 +53,7 @@ Connection::~Connection() {
 
 bool Connection::is_open() const {
   // TODO: return true if the connection is open
-  if (m_fd > 0) {
+  if (m_fd >= 0) {
     return true;
   }
   return false;
@@ -62,7 +62,7 @@ bool Connection::is_open() const {
 void Connection::close() {
   // TODO: close the connection if it is open
   if(is_open()) {
-    Close(m_fd);
+    ::close(m_fd);
     m_fd = -1;
   }
   
@@ -75,6 +75,7 @@ bool Connection::send(const Message &msg) {
   std::string dataTrim = trim_1(msg.data);
   std::string message = msg.tag + ":" + msg.data + "\n";
   //Might need to add check for propery formatted room name and username
+  std::cerr << "Message being sent: " << message.c_str() << std::endl;
   ssize_t writeCheck = rio_writen(m_fd, message.c_str(), message.length());
   if(writeCheck == -1) {
     m_last_result = INVALID_MSG;
@@ -98,13 +99,23 @@ bool Connection::receive(Message &msg) {
   // TODO: receive a message, storing its tag and data in msg
   // return true if successful, false if not
   // make sure that m_last_result is set appropriately
+  //std::cerr << "Checking tag before anything is assigned: " + msg.tag << std::endl; //Remove
+  std::cerr << "m_fd = " << m_fd << std::endl;
   char buffer[msg.MAX_LEN + 1];
   ssize_t readCheck = rio_readlineb(&m_fdbuf, buffer, msg.MAX_LEN + 1);
+  //REMOVE
+  if(is_open()) {
+    std::cerr << "Connection is fine here" << std::endl;
+  }
+  std::cerr << "Contents of buffer: " << buffer << std::endl;
   //fix this - what do you mean by trim?
   //std::stringstream ss(trim_1(buffer));
   std::stringstream ss(buffer);
   std::getline(ss, msg.tag, ':');
+  std::cerr << "Tag is being assigned: " + msg.tag  << std::endl; //Remove
   std::getline(ss, msg.data);
+  std::cerr << "Data is being assigned: " + msg.data  << std::endl; //Remove
+
   if(readCheck == -1) {
     m_last_result = INVALID_MSG;
     std::cerr << "negative readcheck" << std::endl; //delete later
