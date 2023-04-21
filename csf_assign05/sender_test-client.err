@@ -1,10 +1,3 @@
 slogin
-Message being sent: slogin:alice
-
-m_fd = 3
-Connection is fine here
-Contents of buffer: 
-Tag is being assigned: 
-Data is being assigned: alice
 zero readcheck
 : alice slogin failed
