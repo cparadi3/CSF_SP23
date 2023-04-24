@@ -20,9 +20,9 @@
 // TODO: add any additional data types that might be helpful
 //       for implementing the Server member functions
 
-struct ConnInfo {
-    int clientfd;
-    const char *webroot;
+struct ClientInfo {
+    Connection *conn;
+    bool isReader = false;
 };
 ////////////////////////////////////////////////////////////////////////
 // Client thread functions
@@ -31,17 +31,17 @@ struct ConnInfo {
 namespace {
 
 void *worker(void *arg) {
+  struct ClientInfo *info = static_cast<ClientInfo *>(arg);
   pthread_detach(pthread_self());
-
   // TODO: use a static cast to convert arg from a void* to
   //       whatever pointer type describes the object(s) needed
   //       to communicate with a client (sender or receiver)
-ConnInfo *info;
-info->webroot = (char*) arg;
 
-//server_chat_with_client()
+  //server_chat_with_client()
   // TODO: read login message (should be tagged either with
   //       TAG_SLOGIN or TAG_RLOGIN), send response
+  Message msg;
+  
 
   // TODO: depending on whether the client logged in as a sender or
   //       receiver, communicate with the client (implementing
@@ -77,21 +77,21 @@ void Server::handle_client_requests() {
   // TODO: infinite loop calling accept or Accept, starting a new
   //       pthread for each connected client
   while (1) {
-    int clientfd = Accept(m_port, NULL, NULL);
+    int clientfd = accept(m_port, NULL, NULL);
     if (clientfd < 0) {
       std::cerr << "Error accepting client connection" << std::endl;
       return;
     }
 
-    struct ConnInfo *info = new(ConnInfo);
-    info->clientfd = clientfd;
-    worker() 
+    struct ClientInfo *info = new ClientInfo();
+    worker(info); 
 
     pthread_t thr_id;
 
     if (pthread_create(&thr_id, NULL, worker, info) != 0) {
       //fatal("pthread create failed");
       std::cerr << "pthread create failed" << std::endl;
+      return;
     }
   }
 }
