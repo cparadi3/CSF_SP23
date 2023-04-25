@@ -22,7 +22,11 @@
 
 struct ClientInfo {
     Connection *conn;
-    bool isReader = false;
+    Server *server;
+    ClientInfo(Connection *conn, Server *server) : conn(conn), server(server) {}
+    ~ClientInfo() {
+      delete conn;
+    }
 };
 ////////////////////////////////////////////////////////////////////////
 // Client thread functions
