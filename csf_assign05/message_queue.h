@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <pthread.h>
+#include "guard.h" //we added this
 #include <semaphore.h>
 struct Message;
 
