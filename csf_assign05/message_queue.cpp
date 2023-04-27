@@ -11,8 +11,8 @@ MessageQueue::MessageQueue() {
 
 MessageQueue::~MessageQueue() {
   // TODO: destroy the mutex and the semaphore
-  pthread_mutex_destroy;
-  sem_destroy;
+  pthread_mutex_destroy(&m_lock);
+  sem_destroy(&m_avail);
 }
 
 void MessageQueue::enqueue(Message *msg) {

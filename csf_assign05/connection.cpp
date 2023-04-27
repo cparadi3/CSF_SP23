@@ -107,13 +107,13 @@ bool Connection::receive(Message &msg) {
   std::getline(ss, msg.data);
   if(readCheck == -1) {
     m_last_result = INVALID_MSG;
-    std::cerr << "negative readcheck" << std::endl; //delete later
+    //std::cerr << "negative readcheck" << std::endl; //delete later
     return false;
   
   }
   else if (readCheck == 0) {
     m_last_result = EOF_OR_ERROR;
-    std::cerr << "zero readcheck" << std::endl; //delete later
+    //std::cerr << "zero readcheck" << std::endl; //delete later
     return false;
   }
   else {

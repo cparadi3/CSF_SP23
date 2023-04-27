@@ -1,6 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include "client_util.h"
 #include <map>
 #include <string>
 #include <pthread.h>

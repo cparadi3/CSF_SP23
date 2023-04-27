@@ -2,6 +2,7 @@
 #include <string>
 #include "connection.h"
 #include "message.h"
+#include "server.h"
 #include "client_util.h"
 
 // string trim functions shamelessly stolen from

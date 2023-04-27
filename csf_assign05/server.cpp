@@ -8,6 +8,7 @@
 #include <cassert>
 #include "message.h"
 #include "connection.h"
+#include "client_util.h"
 #include "user.h"
 #include "room.h"
 #include "guard.h"
@@ -28,35 +29,55 @@ struct ClientInfo {
       delete conn;
     }
 };
+
+
+const std::string WHITESPACE = " \n\r\t\f\v";
+std::string ltrim_2(const std::string &s) {
+  size_t start = s.find_first_not_of(WHITESPACE);
+  return (start == std::string::npos) ? "" : s.substr(start);
+}
+ 
+std::string rtrim_2(const std::string &s) {
+  size_t end = s.find_last_not_of(WHITESPACE);
+  return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+ 
+std::string trim_2(const std::string &s) {
+  return rtrim_2(ltrim_2(s));
+}
 ////////////////////////////////////////////////////////////////////////
 // Client thread functions
 ////////////////////////////////////////////////////////////////////////
 
 namespace {
-void chatSender(ClientInfo *info, std::string username) {
+void chat_with_sender(ClientInfo *info, std::string username) {
   Message msg;
   std::string room_name;
   Room *room = NULL;
 
-  Connection* temp_conn = info->conn; //double check this
+  //Connection* info->conn = info->conn; //double check this
 
   while(1) {
-    if (temp_conn->receive(msg) == false) {
-      if (temp_conn->get_last_result() == Connection::INVALID_MSG) {
-        temp_conn->send(Message(TAG_ERR, "Invalid message"));
+    if (info->conn->receive(msg) == false) {
+      if (info->conn->get_last_result() == Connection::INVALID_MSG) {
+        info->conn->send(Message(TAG_ERR, "Invalid message"));
       }
       return;
     } else if (msg.tag == TAG_SENDALL) {
       if (room != NULL) {
-        if(temp_conn->send(Message(TAG_OK, "successful send"))) { //double check this
-          room->broadcast_message(username, msg.data);
+        if(info->conn->send(Message(TAG_OK, "successful send")) == false) { //double check this
+          return;
         }
-        return;
+        room->broadcast_message(username, trim_2(msg.data));
+      } else {
+        if (info->conn->send(Message(TAG_ERR, "must be in a room")) == false) {
+          return;
+        }
       }
     } else if (msg.tag == TAG_JOIN) {
-      room_name = msg.data;
+      room_name = trim_2(msg.data);
       room = info->server->find_or_create_room(room_name);
-      if (temp_conn->send(Message(TAG_OK, "joined " + room_name)) == false) {
+      if (info->conn->send(Message(TAG_OK, "joined " + room_name)) == false) {
         return;
       }
 
@@ -64,40 +85,44 @@ void chatSender(ClientInfo *info, std::string username) {
       else if (msg.tag == TAG_LEAVE) {
       if (room != NULL) {
         room = NULL;
-        if (temp_conn->send(Message(TAG_OK, "left " + room_name)) == false) {
+        if (info->conn->send(Message(TAG_OK, "left " + room_name)) == false) {
             return;
         }
       } else {
-        if (temp_conn->send(Message(TAG_ERR, "not in a room")) == false) {
+        if (info->conn->send(Message(TAG_ERR, "not in a room")) == false) {
           return;
         }
       }
     } else if (msg.tag == TAG_QUIT) {
-      temp_conn->send(Message(TAG_OK, "quitting " + room_name));
+      info->conn->send(Message(TAG_OK, "quitting"));
       return;
+    } else {
+      if (info->conn->send(Message(TAG_ERR, "invalid message tag")) == false) {
+        return;
+      }
     }
   }
 }
 
 
-void chatReceiver(ClientInfo *info, std::string username) {
-  Connection* temp_conn = info->conn;
+void chat_with_receiver(ClientInfo *info, std::string username) {
+  //Connection* info->conn = info->conn;
   Room* room = NULL;
   std::string room_name;
   Message msg;
 
-  if (temp_conn->receive(msg) == false) {
-    if (temp_conn->get_last_result() == Connection::INVALID_MSG) {
-      temp_conn->send(Message(TAG_ERR, "Invalid Message"));
+  if (info->conn->receive(msg) == false) {
+    if (info->conn->get_last_result() == Connection::INVALID_MSG) {
+      info->conn->send(Message(TAG_ERR, "Invalid Message"));
     }
     return;
   }
   if (msg.tag != TAG_JOIN) {
-    temp_conn->send(Message(TAG_ERR, "cannot send message without joining"));
+    info->conn->send(Message(TAG_ERR, "cannot send message without joining"));
     return;
   }
-  room_name = msg.data;
-  if (temp_conn->send(Message(TAG_OK, "joined " + room_name)) == false) {
+  room_name = trim_2(msg.data);
+  if (info->conn->send(Message(TAG_OK, "joined " + room_name)) == false) {
     return;
   }
 
@@ -109,7 +134,7 @@ void chatReceiver(ClientInfo *info, std::string username) {
     Message* dqMsg = NULL;
     dqMsg = user.mqueue.dequeue();
     if (dqMsg != NULL) {
-      if (temp_conn->send(*dqMsg) == false) {
+      if (info->conn->send(*dqMsg) == false) {
         delete dqMsg;
         break;
       }
@@ -153,22 +178,24 @@ void *worker(void *arg) {
     return nullptr;
   }
 
-  msg = Message(TAG_OK, msg.data);
-  if(info->conn->send(msg) == false) {
+  Message temp = Message(TAG_OK, msg.data);
+  if(info->conn->send(temp) == false) {
     return nullptr;
   }
 
   if (msg.tag.compare(TAG_SLOGIN) == 0) {
-    chatSender(info, msg.data);
+    chat_with_sender(info, msg.data);
   }
-  else {
-    chatReceiver(info, msg.data);
+  else if (msg.tag.compare(TAG_RLOGIN) == 0) {
+    chat_with_receiver(info, msg.data);
   }
   return nullptr;
 }
 
-
 }
+
+
+
 
 ////////////////////////////////////////////////////////////////////////
 // Server member function implementation
@@ -240,3 +267,4 @@ Room *Server::find_or_create_room(const std::string &room_name) {
   }
   return tempRoom;
 }
+
