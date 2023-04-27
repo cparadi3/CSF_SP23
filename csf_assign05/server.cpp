@@ -33,8 +33,95 @@ struct ClientInfo {
 ////////////////////////////////////////////////////////////////////////
 
 namespace {
-void chatSender(ClientInfo *info, std::string username) {}
-void chatReceiver(ClientInfo *info, std::string username) {}
+void chatSender(ClientInfo *info, std::string username) {
+  Message msg;
+  std::string room_name;
+  Room *room = NULL;
+
+  Connection* temp_conn = info->conn; //double check this
+
+  while(1) {
+    if (temp_conn->receive(msg) == false) {
+      if (temp_conn->get_last_result() == Connection::INVALID_MSG) {
+        temp_conn->send(Message(TAG_ERR, "Invalid message"));
+      }
+      return;
+    } else if (msg.tag == TAG_SENDALL) {
+      if (room != NULL) {
+        if(temp_conn->send(Message(TAG_OK, "successful send"))) { //double check this
+          room->broadcast_message(username, msg.data);
+        }
+        return;
+      }
+    } else if (msg.tag == TAG_JOIN) {
+      room_name = msg.data;
+      room = info->server->find_or_create_room(room_name);
+      if (temp_conn->send(Message(TAG_OK, "joined " + room_name)) == false) {
+        return;
+      }
+
+    }
+      else if (msg.tag == TAG_LEAVE) {
+      if (room != NULL) {
+        room = NULL;
+        if (temp_conn->send(Message(TAG_OK, "left " + room_name)) == false) {
+            return;
+        }
+      } else {
+        if (temp_conn->send(Message(TAG_ERR, "not in a room")) == false) {
+          return;
+        }
+      }
+    } else if (msg.tag == TAG_QUIT) {
+      temp_conn->send(Message(TAG_OK, "quitting " + room_name));
+      return;
+    }
+  }
+}
+
+
+void chatReceiver(ClientInfo *info, std::string username) {
+  Connection* temp_conn = info->conn;
+  Room* room = NULL;
+  std::string room_name;
+  Message msg;
+
+  if (temp_conn->receive(msg) == false) {
+    if (temp_conn->get_last_result() == Connection::INVALID_MSG) {
+      temp_conn->send(Message(TAG_ERR, "Invalid Message"));
+    }
+    return;
+  }
+  if (msg.tag != TAG_JOIN) {
+    temp_conn->send(Message(TAG_ERR, "cannot send message without joining"));
+    return;
+  }
+  room_name = msg.data;
+  if (temp_conn->send(Message(TAG_OK, "joined " + room_name)) == false) {
+    return;
+  }
+
+  room = info->server->find_or_create_room(room_name);
+  User user(username);
+  room->add_member(&user);
+
+  while (1) {
+    Message* dqMsg = NULL;
+    dqMsg = user.mqueue.dequeue();
+    if (dqMsg != NULL) {
+      if (temp_conn->send(*dqMsg) == false) {
+        delete dqMsg;
+        break;
+      }
+      delete dqMsg;
+    }
+
+  }
+  room->remove_member(&user);
+
+}
+
+
 void *worker(void *arg) {
   pthread_detach(pthread_self());
   ClientInfo *info = static_cast<ClientInfo *>(arg);
