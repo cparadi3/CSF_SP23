@@ -23,17 +23,14 @@ int main(int argc, char **argv) {
 
   Connection conn;
 
-  // TODO: connect to server
+  // connect to server
   conn.connect(server_hostname, server_port);
   if(!conn.is_open()) {
     std::cerr << "Could not connect" << std::endl;
     return 1;
   }
-  //REMOVE
-  //std::cerr << TAG_SLOGIN << std::endl;
-  //do rlogin first maybe?
   Message msg = Message(TAG_SLOGIN, username);
-  // TODO: send slogin message
+  //  send slogin message
   if(conn.send(msg) == false) {
     std::cerr << "send failed" << std::endl;
   }
@@ -46,7 +43,7 @@ int main(int argc, char **argv) {
     conn.close();
     return 1;  //check
   }
-  // TODO: loop reading commands from user, sending messages to
+  // loop reading commands from user, sending messages to
   //       server as appropriate
   while(1) {
     std::string input;
@@ -62,7 +59,6 @@ int main(int argc, char **argv) {
         std::cerr << msg.data << std::endl;  //check
       }
     }
-    //Join room here after
     else if(input.compare(0, 6, "/leave") == 0) {
       Message msg = Message(TAG_LEAVE, "Leaving");
       conn.send(msg);
