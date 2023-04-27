@@ -60,8 +60,26 @@ void *worker(void *arg) {
     return nullptr;
   }
 
+  if(msg.tag.compare(TAG_SLOGIN) != 0 && msg.tag.compare(TAG_RLOGIN) != 0) {
+    msg = Message(TAG_ERR, "First message was not a login");
+    info->conn->send(msg);
+    return nullptr;
+  }
+
+  msg = Message(TAG_OK, msg.data);
+  if(info->conn->send(msg) == false) {
+    return nullptr;
+  }
+
+  if (msg.tag.compare(TAG_SLOGIN) == 0) {
+    chatSender(info, msg.data);
+  }
+  else {
+    chatReceiver(info, msg.data);
+  }
   return nullptr;
 }
+
 
 }
 
