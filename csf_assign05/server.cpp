@@ -166,7 +166,7 @@ void *worker(void *arg) {
   //       whatever pointer type describes the object(s) needed
   //       to communicate with a client (sender or receiver)
 
-  
+  std::unique_ptr<ClientInfo> info_(info);
   //  read login message (should be tagged either with
   //       TAG_SLOGIN or TAG_RLOGIN), send response
   Message msg;
