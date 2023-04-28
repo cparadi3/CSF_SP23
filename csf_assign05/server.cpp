@@ -257,7 +257,7 @@ void Server::handle_client_requests() {
 
     pthread_t thr_id;
 
-    if (pthread_create(&thr_id, NULL, worker, info) != 0) {
+    if (pthread_create(&thr_id, nullptr, worker, static_cast<void *>(info)) != 0) {
       //fatal("pthread create failed");
       std::cerr << "pthread create failed" << std::endl;
       return;
@@ -268,7 +268,7 @@ void Server::handle_client_requests() {
 Room *Server::find_or_create_room(const std::string &room_name) {
   //  return a pointer to the unique Room object representing
   //       the named chat room, creating a new one if necessary
-  Guard(this->m_lock);
+  Guard (this->m_lock);
   Room *tempRoom;
   auto findRoom = m_rooms.find(room_name);
   if(findRoom == m_rooms.end()) {
